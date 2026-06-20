@@ -238,11 +238,27 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       year: 'numeric', month: 'short'
     });
 
+    // Format project name professionally (capitalize first letter of each word)
+    const formattedName = repo.name
+      .replace(/-/g, ' ')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+
+    // Determine professional tag based on language
+    const getTag = (language) => {
+      if (!language) return 'Project';
+      const langLower = language.toLowerCase();
+      if (langLower.includes('vue') || langLower.includes('react') || langLower.includes('angular') || langLower.includes('javascript')) return 'Web App';
+      if (langLower.includes('php') || langLower.includes('python') || langLower.includes('node') || langLower.includes('java')) return 'Full-Stack';
+      if (langLower.includes('c#') || langLower.includes('c++') || langLower.includes('java')) return 'Desktop App';
+      return 'Project';
+    };
+
     card.innerHTML = `
       <div class="work__text">
-        <span class="work__tag">GitHub</span>
-        <h3>${escapeHtml(repo.name.replace(/-/g, ' ').replace(/_/g, ' '))}</h3>
-        <p class="work__desc">${escapeHtml(repo.description || 'No description provided.')}</p>
+        <span class="work__tag">${getTag(repo.language)}</span>
+        <h3>${escapeHtml(formattedName)}</h3>
+        <p class="work__desc">${escapeHtml(repo.description || 'A professional project showcasing development skills and technical expertise.')}</p>
         <ul class="work__list">
           ${langs}
         </ul>
@@ -276,11 +292,11 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
             <span class="mockup-browser__dot mockup-browser__dot--red"></span>
             <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
             <span class="mockup-browser__dot mockup-browser__dot--green"></span>
-            <div class="mockup-browser__url">github.com/${encodeURIComponent(username)}</div>
+            <div class="mockup-browser__url">github.com/${encodeURIComponent(username)}/${encodeURIComponent(repo.name)}</div>
           </div>
           <div class="mockup-browser__screen mockup-github-screen">
             <div class="mockup-github-card">
-              <div class="mockup-github-card__name">${escapeHtml(repo.name)}</div>
+              <div class="mockup-github-card__name">${escapeHtml(formattedName)}</div>
               <div class="mockup-github-card__desc">${escapeHtml(repo.description || '')}</div>
               <div class="mockup-github-card__stats">
                 ${repo.language ? `<span class="mockup-github-card__lang">${escapeHtml(repo.language)}</span>` : ''}
