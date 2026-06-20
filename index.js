@@ -182,7 +182,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       .map(el => el.dataset.repo.toLowerCase())
   );
 
-  // Repos to always skip (forks, config repos, etc.)
+  // Repos to always skip (config repos, etc.)
   const SKIP_REPOS = new Set([
     username.toLowerCase(),        // profile readme repo
     '.github',
@@ -201,12 +201,12 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     return;
   }
 
-  // Filter: public, non-fork, not already shown, not in skip list
+  // Filter: public, not already shown, not in skip list (allow forks now)
   const newRepos = repos.filter(r =>
     !r.private &&
-    !r.fork &&
     !existingSlugs.has(r.name.toLowerCase()) &&
-    !SKIP_REPOS.has(r.name.toLowerCase())
+    !SKIP_REPOS.has(r.name.toLowerCase()) &&
+    r.description && r.description.length > 10  // Only show repos with descriptions
   );
 
   if (newRepos.length === 0) return;
