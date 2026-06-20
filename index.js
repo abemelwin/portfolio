@@ -205,7 +205,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   const newRepos = repos.filter(r =>
     !r.private &&
     !existingSlugs.has(r.name.toLowerCase()) &&
-    !SKIP_REPOS.has(r.name.toLowerCase())
+    !SKIP_REPOS.has(r.name.toLowerCase()) &&
+    r.description && r.description.length > 10  // Only show repos with descriptions
   );
 
   if (newRepos.length === 0) return;
