@@ -69,13 +69,29 @@
     <section class="work" id="work" data-github-username="abemelwin">
       <div class="row">
         <h2>My Projects</h2>
-        <div class="work__boxes">
+        <p class="work__subtitle">A collection of projects I've built — automatically synced from my GitHub.</p>
 
-        <!-- GitHub auto-fetched projects will be injected here -->
-        <div id="github-projects" class="github-projects">
-          <!-- JS will populate this -->
+        <!-- Loading skeleton (shown while fetching) -->
+        <div id="github-loading" class="github-loading">
+          <div class="github-loading__card">
+            <div class="github-loading__shimmer github-loading__shimmer--tag"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--title"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc short"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--pills"></div>
+          </div>
+          <div class="github-loading__card">
+            <div class="github-loading__shimmer github-loading__shimmer--tag"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--title"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc short"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--pills"></div>
+          </div>
         </div>
 
+        <!-- GitHub auto-fetched projects will be injected here -->
+        <div id="github-projects" class="work__boxes github-projects">
+          <!-- JS will populate this -->
         </div>
 
       </div>
@@ -170,14 +186,14 @@
 
             <p class="about__skills-label">Technologies I work with</p>
             <div class="about__skills">
-              <p>Modern Frontend & State Management</p>
+              <span class="about__skills-group">Modern Frontend & State Management</span>
               <span class="skill-tag">TypeScript</span>
               <span class="skill-tag">Next.js</span>
               <span class="skill-tag">Nuxt.js</span>
               <span class="skill-tag">Vue.js</span>
               <span class="skill-tag">React</span>
               <span class="skill-tag">Tailwind CSS</span>
-              <p>Backend & Databases</p>
+              <span class="about__skills-group">Backend & Databases</span>
               <span class="skill-tag">PHP</span>
               <span class="skill-tag">Laravel</span>
               <span class="skill-tag">Node.js</span>
@@ -185,7 +201,7 @@
               <span class="skill-tag">MySQL</span>
               <span class="skill-tag">PostgreSQL</span>
               <span class="skill-tag">MongoDB</span>
-              <p>Tools & Platforms</p>
+              <span class="about__skills-group">Tools & Platforms</span>
               <span class="skill-tag">Docker</span>
               <span class="skill-tag">Git</span>
               <span class="skill-tag">REST APIs</span>
@@ -196,12 +212,6 @@
               <span class="skill-tag">Vercel</span>
               <span class="skill-tag">Twilio</span>
               <span class="skill-tag">Supabase</span>
-
-
-         
-         
-
-
             </div>
             <a href="ABE_MELWIN DAVE_RESUME.pdf" class="btn btn--secondary" target="_blank" rel="noopener noreferrer">Download Resume</a>
           </div>
@@ -270,7 +280,7 @@
     <div class="row">
       <ul class="footer__social-links">
         <li class="footer__social-link-item">
-          <a href="https://abemelwin.github.io/portfolio/" title="GitHub Profile" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/abemelwin" title="GitHub Profile" target="_blank" rel="noopener noreferrer">
             <img src="./images/github.svg" class="footer__social-image" alt="Github">
           </a>
         </li>
@@ -285,7 +295,7 @@
       </ul>
       <p class="footer__copy">
         &copy; <span id="footer-year"></span> Melwin Dave D. Abe &mdash; Designed &amp; built by
-        <a href="https://abemelwin.github.io/portfolio/" class="link">Dave</a>.
+        <a href="https://github.com/abemelwin" class="link">Dave</a>.
       </p>
     </div>
   </footer>
