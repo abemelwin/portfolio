@@ -29,8 +29,6 @@
   <!-- ***** Header ***** -->
 
   <header class="header" role="banner" id="top">
-    <canvas id="matrix-canvas"></canvas>
-
     <div class="row">
       <nav class="nav" role="navigation">
         <div class="nav__logo"></div>
@@ -52,8 +50,8 @@
         <p class="header__role"><span class="header__role-bracket">&lt;</span>Full-Stack Developer<span class="header__role-bracket">/&gt;</span></p>
         <p class="header__tagline">I build clean, scalable web applications — from pixel-perfect frontends to robust backends.</p>
         <div class="header__cta">
-          <a href="#work"    class="btn btn--pink">View My Work</a>
-          <a href="#contact" class="btn">Get in Touch</a>
+          <a href="#work" class="btn">View My Work</a>
+          <a href="#contact" class="btn btn--outline">Get in Touch</a>
         </div>
       </div>
     </div>
@@ -68,13 +66,13 @@
 
     <!-- ***** Work ***** -->
 
-    <section class="work" id="work">
+    <section class="work" id="work" data-github-username="melwindaveabe">
       <div class="row">
         <h2>My Projects</h2>
         <div class="work__boxes">
 
           <!-- Project 1 -->
-          <div class="work__box fade-in">
+          <div class="work__box fade-in" data-repo="TGRabbitry" data-locked="true">
             <div class="work__text">
               <span class="work__tag">Full-Stack</span>
               <h3>TG Rabbitry</h3>
@@ -140,7 +138,7 @@
           </div>
 
           <!-- Project 2 -->
-          <div class="work__box work__box--reverse fade-in">
+          <div class="work__box work__box--reverse fade-in" data-repo="Service-Link-Admin-01">
             <div class="work__text">
               <span class="work__tag">Full-Stack</span>
               <h3>Service Link Admin</h3>
@@ -193,7 +191,7 @@
           </div>
 
           <!-- Project 3 -->
-          <div class="work__box fade-in">
+          <div class="work__box fade-in" data-repo="servicelink">
             <div class="work__text">
               <span class="work__tag">Full-Stack</span>
               <h3>Service Link</h3>
@@ -245,111 +243,7 @@
             </div>
           </div>
 
-          <div class="work__box work__box--reverse fade-in">
-            <div class="work__text">
-              <span class="work__tag">Backend</span>
-              <h3>Task Management System Backend</h3>
-              <p class="work__desc">RESTful backend for task and project management with secure user roles, project workflows, and API-driven data handling to support a modern Vue frontend.</p>
-              <ul class="work__list">
-                <li>PHP</li>
-                <li>MySQL</li>
-                <li>REST API</li>
-                <li>Authentication</li>
-              </ul>
-              <div class="work__links">
-                <a href="https://github.com/melwindaveabe/task-management-system-backend" target="_blank" rel="noopener noreferrer" class="link__text">
-                  View on GitHub <span>&rarr;</span>
-                </a>
-              </div>
-            </div>
-            <div class="work__image-box">
-              <div class="mockup-browser">
-                <div class="mockup-browser__bar">
-                  <span class="mockup-browser__dot mockup-browser__dot--red"></span>
-                  <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
-                  <span class="mockup-browser__dot mockup-browser__dot--green"></span>
-                  <div class="mockup-browser__url">api.taskmanager</div>
-                </div>
-                <div class="mockup-browser__screen">
-                  <div class="mockup-sidebar">
-                    <div class="mockup-sidebar__logo">API</div>
-                    <div class="mockup-sidebar__item mockup-sidebar__item--active">Tasks</div>
-                    <div class="mockup-sidebar__item">Projects</div>
-                    <div class="mockup-sidebar__item">Users</div>
-                    <div class="mockup-sidebar__item">Reports</div>
-                  </div>
-                  <div class="mockup-content">
-                    <div class="mockup-content__header">API Dashboard</div>
-                    <div class="mockup-stats">
-                      <div class="mockup-stat"><div class="mockup-stat__num">120</div><div class="mockup-stat__label">Tasks</div></div>
-                      <div class="mockup-stat"><div class="mockup-stat__num">18</div><div class="mockup-stat__label">Projects</div></div>
-                      <div class="mockup-stat"><div class="mockup-stat__num">24</div><div class="mockup-stat__label">Users</div></div>
-                    </div>
-                    <div class="mockup-table">
-                      <div class="mockup-table__row mockup-table__row--head"><span>Endpoint</span><span>Method</span><span>Status</span></div>
-                      <div class="mockup-table__row"><span>/tasks</span><span>GET</span><span class="mockup-badge mockup-badge--green">Active</span></div>
-                      <div class="mockup-table__row"><span>/projects</span><span>POST</span><span class="mockup-badge mockup-badge--green">Active</span></div>
-                      <div class="mockup-table__row"><span>/auth</span><span>POST</span><span class="mockup-badge mockup-badge--pink">Protected</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="work__box fade-in">
-            <div class="work__text">
-              <span class="work__tag">Frontend</span>
-              <h3>Task Management System Frontend</h3>
-              <p class="work__desc">Vue frontend for managing tasks, projects, and teams. Includes responsive dashboards, kanban views, and intuitive controls for scheduling and collaboration.</p>
-              <ul class="work__list">
-                <li>Vue.js</li>
-                <li>JavaScript</li>
-                <li>CSS3</li>
-                <li>Axios</li>
-              </ul>
-              <div class="work__links">
-                <a href="https://github.com/melwindaveabe/task-management-system-frontend" target="_blank" rel="noopener noreferrer" class="link__text">
-                  View on GitHub <span>&rarr;</span>
-                </a>
-              </div>
-            </div>
-            <div class="work__image-box">
-              <div class="mockup-browser">
-                <div class="mockup-browser__bar">
-                  <span class="mockup-browser__dot mockup-browser__dot--red"></span>
-                  <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
-                  <span class="mockup-browser__dot mockup-browser__dot--green"></span>
-                  <div class="mockup-browser__url">taskmanager.app</div>
-                </div>
-                <div class="mockup-browser__screen">
-                  <div class="mockup-sidebar">
-                    <div class="mockup-sidebar__logo">TM</div>
-                    <div class="mockup-sidebar__item mockup-sidebar__item--active">Dashboard</div>
-                    <div class="mockup-sidebar__item">Tasks</div>
-                    <div class="mockup-sidebar__item">Teams</div>
-                    <div class="mockup-sidebar__item">Calendar</div>
-                  </div>
-                  <div class="mockup-content">
-                    <div class="mockup-content__header">Task Manager</div>
-                    <div class="mockup-stats">
-                      <div class="mockup-stat"><div class="mockup-stat__num">14</div><div class="mockup-stat__label">Projects</div></div>
-                      <div class="mockup-stat"><div class="mockup-stat__num">88</div><div class="mockup-stat__label">Tasks</div></div>
-                      <div class="mockup-stat"><div class="mockup-stat__num">6</div><div class="mockup-stat__label">Teams</div></div>
-                    </div>
-                    <div class="mockup-table">
-                      <div class="mockup-table__row mockup-table__row--head"><span>Task</span><span>Owner</span><span>Due</span></div>
-                      <div class="mockup-table__row"><span>Design UI</span><span>Amy</span><span>Today</span></div>
-                      <div class="mockup-table__row"><span>Deploy API</span><span>Jhon</span><span>Fri</span></div>
-                      <div class="mockup-table__row"><span>Write Docs</span><span>Rosa</span><span>Mon</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="work__box work__box--reverse fade-in">
+          <div class="work__box work__box--reverse fade-in" data-repo="custom-programmer-guide-list">
             <div class="work__text">
               <span class="work__tag">Web App</span>
               <h3>Custom Programmer Guide List</h3>
@@ -402,7 +296,7 @@
           </div>
 
           <!-- Project 4 -->
-          <div class="work__box fade-in">
+          <div class="work__box fade-in" data-repo="custom-web-file-manager">
             <div class="work__text">
               <span class="work__tag">Full-Stack</span>
               <h3>Custom Web File Manager</h3>
@@ -458,7 +352,65 @@
             </div>
           </div>
 
+          <div class="work__box work__box--reverse fade-in" data-repo="esprintmonitoring">
+            <div class="work__text">
+              <span class="work__tag">Web App</span>
+              <h3>ES Print Service Monitoring</h3>
+              <p class="work__desc">Monitoring system for tracking service requests and print jobs for ES Print Service.</p>
+              <ul class="work__list">
+                <li>PHP</li>
+                <li>JavaScript</li>
+                <li>MySQL</li>
+                <li>Ajax</li>
+              </ul>
+              <div class="work__links">
+                <a href="https://github.com/melwindaveabe/esprintmonitoring" target="_blank" rel="noopener noreferrer" class="link__text">
+                  View on GitHub <span>&rarr;</span>
+                </a>
+              </div>
+            </div>
+            <div class="work__image-box">
+              <div class="mockup-browser">
+                <div class="mockup-browser__bar">
+                  <span class="mockup-browser__dot mockup-browser__dot--red"></span>
+                  <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
+                  <span class="mockup-browser__dot mockup-browser__dot--green"></span>
+                  <div class="mockup-browser__url">esprintmonitoring.app</div>
+                </div>
+                <div class="mockup-browser__screen">
+                  <div class="mockup-sidebar">
+                    <div class="mockup-sidebar__logo">ES</div>
+                    <div class="mockup-sidebar__item mockup-sidebar__item--active">Dashboard</div>
+                    <div class="mockup-sidebar__item">Print Jobs</div>
+                    <div class="mockup-sidebar__item">Users</div>
+                    <div class="mockup-sidebar__item">Reports</div>
+                  </div>
+                  <div class="mockup-content">
+                    <div class="mockup-content__header">Print Monitor</div>
+                    <div class="mockup-stats">
+                      <div class="mockup-stat"><div class="mockup-stat__num">245</div><div class="mockup-stat__label">Jobs</div></div>
+                      <div class="mockup-stat"><div class="mockup-stat__num">12</div><div class="mockup-stat__label">Printers</div></div>
+                      <div class="mockup-stat"><div class="mockup-stat__num">₱15K</div><div class="mockup-stat__label">Cost</div></div>
+                    </div>
+                    <div class="mockup-table">
+                      <div class="mockup-table__row mockup-table__row--head"><span>Job</span><span>User</span><span>Status</span></div>
+                      <div class="mockup-table__row"><span>Report.pdf</span><span>Juan</span><span class="mockup-badge mockup-badge--green">Done</span></div>
+                      <div class="mockup-table__row"><span>Invoice.docx</span><span>Maria</span><span class="mockup-badge mockup-badge--green">Done</span></div>
+                      <div class="mockup-table__row"><span>Proposal.pdf</span><span>Carlos</span><span class="mockup-badge mockup-badge--pink">Pending</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        <!-- GitHub auto-fetched projects will be injected here -->
+        <div id="github-projects" class="github-projects">
+          <!-- JS will populate this -->
+        </div>
+
       </div>
     </section>
 
@@ -544,7 +496,7 @@
               <span class="skill-tag">Git</span>
               <span class="skill-tag">REST APIs</span>
             </div>
-            <a href="ABE_MELWIN DAVE_RESUME.pdf" class="btn" target="_blank" rel="noopener noreferrer">Download Resume</a>
+            <a href="ABE_MELWIN DAVE_RESUME.pdf" class="btn btn--secondary" target="_blank" rel="noopener noreferrer">Download Resume</a>
           </div>
 
           <div class="about__photo-container">
@@ -569,9 +521,10 @@
         </p>
         <form
           class="contact__form"
-          action="https://formspree.io/f/YOUR_FORM_ID"
+          action="mailto:abemelwin01@gmail.com"
           method="POST"
-          onsubmit="handleFormSubmit(event)"
+          enctype="text/plain"
+          onsubmit="handleMailtoForm(event)"
         >
           <div class="contact__form-group">
             <div class="contact__field">
@@ -587,10 +540,10 @@
             <label class="contact__label" for="c-message">Message</label>
             <textarea id="c-message" name="message" class="contact__input contact__textarea" placeholder="Your Message" rows="5" required></textarea>
           </div>
-          <button type="submit" class="btn btn--pink contact__submit">Send Message</button>
+          <button type="submit" class="btn contact__submit">Send Message</button>
         </form>
         <p class="contact__or">Or reach me directly at</p>
-        <a href="mailto:abemelwin01@gmail.com" class="btn">abemelwin01@gmail.com</a>
+        <a href="mailto:abemelwin01@gmail.com" class="btn btn--secondary">abemelwin01@gmail.com</a>
       </div>
     </div>
   </section>
@@ -616,7 +569,7 @@
       </ul>
       <p class="footer__copy">
         &copy; <span id="footer-year"></span> Melwin Dave D. Abe &mdash; Designed &amp; built by
-        <a href="https://github.com/melwindaveabe" class="link">Dave</a>.
+        <a href="https://abemelwin.github.io/portfolio/" class="link">Dave</a>.
       </p>
     </div>
   </footer>
