@@ -205,8 +205,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   const newRepos = repos.filter(r =>
     !r.private &&
     !existingSlugs.has(r.name.toLowerCase()) &&
-    !SKIP_REPOS.has(r.name.toLowerCase()) &&
-    r.description && r.description.length > 10  // Only show repos with descriptions
+    !SKIP_REPOS.has(r.name.toLowerCase())
   );
 
   if (newRepos.length === 0) return;
@@ -214,7 +213,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   // Add a divider heading
   const heading = document.createElement('h3');
   heading.className = 'github-projects__heading';
-  heading.textContent = 'More on GitHub';
+  heading.textContent = 'My GitHub Projects';
   container.appendChild(heading);
 
   // Build a card for each new repo
