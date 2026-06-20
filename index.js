@@ -174,6 +174,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   const username = workSection.dataset.githubUsername;
   const container = document.getElementById('github-projects');
+  const loadingEl = document.getElementById('github-loading');
   if (!container) return;
 
   // Collect repo slugs already hardcoded on the page (case-insensitive)
@@ -186,6 +187,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
   const SKIP_REPOS = new Set([
     username.toLowerCase(),        // profile readme repo
     '.github',
+    'portfolio',
   ]);
 
   let repos = [];
@@ -198,29 +200,26 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     repos = await res.json();
   } catch (err) {
     console.warn('GitHub projects fetch failed:', err);
+    if (loadingEl) loadingEl.classList.add('github-loading--hidden');
     return;
   }
 
-  // Filter: public, not already shown, not in skip list (allow forks now)
+  // Hide loading skeleton
+  if (loadingEl) loadingEl.classList.add('github-loading--hidden');
+
+  // Filter: public, not already shown, not in skip list
   const newRepos = repos.filter(r =>
     !r.private &&
     !existingSlugs.has(r.name.toLowerCase()) &&
-    !SKIP_REPOS.has(r.name.toLowerCase()) &&
-    r.description && r.description.length > 10  // Only show repos with descriptions
+    !SKIP_REPOS.has(r.name.toLowerCase())
   );
 
   if (newRepos.length === 0) return;
 
-  // Add a divider heading
-  const heading = document.createElement('h3');
-  heading.className = 'github-projects__heading';
-  heading.textContent = 'My GitHub Projects';
-  container.appendChild(heading);
-
-  // Build a card for each new repo
+  // Build a card for each repo
   newRepos.forEach((repo, index) => {
     const isReverse = index % 2 !== 0;
-    const langs = repo.language ? `<li>${repo.language}</li>` : '';
+    const langs = repo.language ? `<li>${escapeHtml(repo.language)}</li>` : '';
 
     const card = document.createElement('div');
     card.className = `work__box${isReverse ? ' work__box--reverse' : ''} fade-in`;
@@ -234,56 +233,68 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
          </span>`
       : '';
 
+    const forks = repo.forks_count > 0
+      ? `<span class="github-projects__meta-item">
+           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/>
+             <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/><path d="M12 12v3"/>
+           </svg>
+           ${repo.forks_count}
+         </span>`
+      : '';
+
     const updatedDate = new Date(repo.updated_at).toLocaleDateString('en-US', {
       year: 'numeric', month: 'short'
     });
 
-    // Format project name professionally (capitalize first letter of each word)
+    // Format project name professionally
     const formattedName = repo.name
       .replace(/-/g, ' ')
       .replace(/_/g, ' ')
       .replace(/\b\w/g, l => l.toUpperCase());
 
-    // Determine professional tag based on language
+    // Determine tag based on language
     const getTag = (language) => {
       if (!language) return 'Project';
-      const langLower = language.toLowerCase();
-      if (langLower.includes('vue') || langLower.includes('react') || langLower.includes('angular') || langLower.includes('javascript')) return 'Web App';
-      if (langLower.includes('php') || langLower.includes('python') || langLower.includes('node') || langLower.includes('java')) return 'Full-Stack';
-      if (langLower.includes('c#') || langLower.includes('c++') || langLower.includes('java')) return 'Desktop App';
+      const l = language.toLowerCase();
+      if (['javascript', 'typescript', 'vue', 'react'].includes(l)) return 'Web App';
+      if (['php', 'python', 'ruby', 'go'].includes(l)) return 'Full-Stack';
+      if (['c#', 'java', 'c++', 'c'].includes(l)) return 'Application';
+      if (['html', 'css', 'scss'].includes(l)) return 'Frontend';
       return 'Project';
     };
+
+    // Generate a deterministic color accent for the mockup based on repo name
+    const mockupColors = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#06b6d4'];
+    const colorIndex = repo.name.length % mockupColors.length;
+    const accentColor = mockupColors[colorIndex];
 
     card.innerHTML = `
       <div class="work__text">
         <span class="work__tag">${getTag(repo.language)}</span>
         <h3>${escapeHtml(formattedName)}</h3>
-        <p class="work__desc">${escapeHtml(repo.description || 'A professional project showcasing development skills and technical expertise.')}</p>
+        <p class="work__desc">${escapeHtml(repo.description || 'A development project showcasing technical skills and problem-solving.')}</p>
         <ul class="work__list">
           ${langs}
         </ul>
         <div class="github-projects__meta">
           ${stars}
+          ${forks}
           <span class="github-projects__meta-item">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-            Updated ${updatedDate}
+            ${updatedDate}
           </span>
         </div>
         <div class="work__links">
           <a href="${escapeHtml(repo.html_url)}" target="_blank" rel="noopener noreferrer" class="link__text">
             View on GitHub <span>&rarr;</span>
           </a>
-          ${repo.homepage
-            ? `<span class="work__links-separator">|</span>
-               <a href="${escapeHtml(repo.homepage)}" target="_blank" rel="noopener noreferrer" class="link__text">
-                 Live Demo <span>&rarr;</span>
-               </a>`
-            : ''
-          }
         </div>
       </div>
       <div class="work__image-box">
@@ -292,20 +303,23 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
             <span class="mockup-browser__dot mockup-browser__dot--red"></span>
             <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
             <span class="mockup-browser__dot mockup-browser__dot--green"></span>
-            <div class="mockup-browser__url">github.com/${encodeURIComponent(username)}/${encodeURIComponent(repo.name)}</div>
+            <div class="mockup-browser__url">${escapeHtml(repo.name)}</div>
           </div>
           <div class="mockup-browser__screen mockup-github-screen">
             <div class="mockup-github-card">
+              <div class="mockup-github-card__icon" style="color: ${accentColor}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
+                  <path d="M9 18c-4.51 2-5-2-7-2"/>
+                </svg>
+              </div>
               <div class="mockup-github-card__name">${escapeHtml(formattedName)}</div>
               <div class="mockup-github-card__desc">${escapeHtml(repo.description || '')}</div>
               <div class="mockup-github-card__stats">
-                ${repo.language ? `<span class="mockup-github-card__lang">${escapeHtml(repo.language)}</span>` : ''}
+                ${repo.language ? `<span class="mockup-github-card__lang" style="color: ${accentColor}">${escapeHtml(repo.language)}</span>` : ''}
                 <span>★ ${repo.stargazers_count}</span>
                 <span>⑂ ${repo.forks_count}</span>
               </div>
-              <div class="mockup-github-card__bar"></div>
-              <div class="mockup-github-card__bar mockup-github-card__bar--short"></div>
-              <div class="mockup-github-card__bar mockup-github-card__bar--med"></div>
             </div>
           </div>
         </div>
