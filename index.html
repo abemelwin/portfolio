@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Melwin Dave D. Abe | Full-Stack Developer</title>
+
+  <meta name="description" content="Melwin Dave D. Abe — Full-stack developer specializing in Vue.js, PHP, and modern web technologies. Building clean, scalable web applications." />
+  <meta name="keywords" content="Melwin Dave Abe, Full Stack Developer, Vue.js Developer, PHP Developer, Web Developer, JavaScript, Tailwind CSS" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Melwin Dave D. Abe | Full-Stack Developer" />
+  <meta property="og:description" content="Full-stack developer specializing in Vue.js, PHP, and modern web technologies." />
+  <meta property="og:image" content="./images/abe.jpg" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="Melwin Dave D. Abe | Full-Stack Developer" />
+  <meta property="twitter:description" content="Full-stack developer specializing in Vue.js, PHP, and modern web technologies." />
+
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+  <!-- ***** Header ***** -->
+
+  <header class="header" role="banner" id="top">
+    <div class="row">
+      <nav class="nav" role="navigation">
+        <div class="nav__logo"></div>
+        <ul class="nav__items">
+          <li class="nav__item"><a href="#work"       class="nav__link">Projects</a></li>
+          <li class="nav__item"><a href="#experience" class="nav__link">Education & Experience</a></li>
+          <li class="nav__item"><a href="#about"      class="nav__link">About</a></li>
+          <li class="nav__item"><a href="#contact"    class="nav__link">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="header__text-box row">
+      <div class="header__text">
+        <p class="header__greeting">Hello, I'm</p>
+        <h1 class="heading-primary">
+          <span>Melwin Dave D. Abe</span>
+        </h1>
+        <p class="header__role"><span class="header__role-bracket">&lt;</span>Full-Stack Developer<span class="header__role-bracket">/&gt;</span></p>
+        <p class="header__tagline">Building modern, scalable web applications with clean code and intuitive user experiences.</p>
+        <div class="header__cta">
+          <a href="#work" class="btn">View My Work</a>
+          <a href="#contact" class="btn btn--outline">Get in Touch</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="header__scroll" aria-hidden="true">
+      <div class="header__scroll-mouse"><div class="header__scroll-wheel"></div></div>
+      <span class="header__scroll-label">Scroll</span>
+    </div>
+  </header>
+
+  <main role="main">
+
+    <!-- ***** Work ***** -->
+
+    <section class="work" id="work" data-github-username="abemelwin" data-private-repos="esprint-check-monitoring,tg-rabbitry,esprint-service-monitoring">
+      <div class="row">
+        <h2>My Projects</h2>
+        <p class="work__subtitle">A collection of projects I've built — automatically synced from my GitHub.</p>
+
+        <!-- Loading skeleton (shown while fetching) -->
+        <div id="github-loading" class="github-loading">
+          <div class="github-loading__card">
+            <div class="github-loading__shimmer github-loading__shimmer--tag"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--title"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc short"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--pills"></div>
+          </div>
+          <div class="github-loading__card">
+            <div class="github-loading__shimmer github-loading__shimmer--tag"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--title"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--desc short"></div>
+            <div class="github-loading__shimmer github-loading__shimmer--pills"></div>
+          </div>
+        </div>
+
+        <!-- GitHub auto-fetched projects will be injected here -->
+        <div id="github-projects" class="work__boxes github-projects">
+          <!-- JS will populate this -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ***** Experience ***** -->
+
+    <section class="experience" id="experience">
+      <div class="row">
+        <h2>Education & Experience</h2>
+        <div class="timeline">
+
+
+          <div class="timeline__item fade-in">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <div class="timeline__header">
+                <h3 class="timeline__role">Web Developer</h3>
+                <span class="timeline__period">Present 2026</span>
+              </div>
+              <p class="timeline__company">ES Print Media Inc.</p>
+              <p class="timeline__desc">Developing full-stack web applications with modern technologies. Delivering end-to-end solutions from database architecture to responsive user interfaces.</p>
+              <ul class="timeline__tags">
+                <!-- <li>Vue.js</li><li>PHP</li><li>MySQL</li><li>Tailwind CSS</li> -->
+              </ul>
+            </div>
+          </div>
+
+
+          <div class="timeline__item fade-in">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <div class="timeline__header">
+                <h3 class="timeline__role">Full-Stack Developer</h3>
+                <span class="timeline__period">2023 — Present</span>
+              </div>
+              <p class="timeline__company">Freelance</p>
+              <p class="timeline__desc">Building custom web applications for diverse clients. Specializing in full-stack development with Vue.js and PHP, creating scalable solutions from concept to deployment.</p>
+              <ul class="timeline__tags">
+                <!-- <li>Vue.js</li><li>PHP</li><li>MySQL</li><li>Tailwind CSS</li> -->
+              </ul>
+            </div>
+          </div>
+
+          <div class="timeline__item fade-in">
+            <div class="timeline__dot"></div>
+            <div class="timeline__content">
+              <div class="timeline__header">
+                <h3 class="timeline__role">Bachelor of Science Computer Engineering</h3>
+                <span class="timeline__period">Graduated 2022</span>
+              </div>
+              <p class="timeline__company">STI College Batangas / Academic</p>
+              <!-- <p class="timeline__desc">Project leader</p> -->
+              <ul class="timeline__tags">
+                <!-- <li>Algorithms</li><li>OOP</li><li>Web Dev</li><li>Git</li> -->
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ***** About ***** -->
+
+    <section class="about" id="about">
+      <div class="row">
+        <h2>About Me</h2>
+        <div class="about__content fade-in">
+          <div class="about__text">
+            <p>
+              I'm <strong>Melwin Dave D. Abe</strong>, a full-stack developer specializing in building modern web applications with Vue.js and PHP. I focus on creating clean, maintainable code that delivers exceptional user experiences.
+            </p>
+            <p>
+              With a strong foundation in both frontend and backend development, I transform complex requirements into scalable solutions. From database architecture to responsive interfaces, I ensure every aspect of the application is built to professional standards.
+            </p>
+
+            <!-- <div class="about__stats">
+              <div class="about__stat">
+                <span class="about__stat-num" data-target="2">0</span><span class="about__stat-plus">+</span>
+                <span class="about__stat-label">Years Coding</span>
+              </div>
+              <div class="about__stat">
+                <span class="about__stat-num" data-target="5">0</span><span class="about__stat-plus">+</span>
+                <span class="about__stat-label">Projects Built</span>
+              </div>
+              <div class="about__stat">
+                <span class="about__stat-num" data-target="3">0</span><span class="about__stat-plus">+</span>
+                <span class="about__stat-label">Tech Stacks</span>
+              </div>
+            </div> -->
+
+            <p class="about__skills-label">Technologies I work with</p>
+            <div class="about__skills">
+              <span class="about__skills-group">Modern Frontend & State Management</span>
+              <span class="skill-tag">TypeScript</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">Nuxt.js</span>
+              <span class="skill-tag">Vue.js</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Tailwind CSS</span>
+              <span class="about__skills-group">Backend & Databases</span>
+              <span class="skill-tag">PHP</span>
+              <span class="skill-tag">Laravel</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Express</span>
+              <span class="skill-tag">MySQL</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MongoDB</span>
+              <span class="about__skills-group">Tools & Platforms</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">GraphQL</span>
+              <span class="skill-tag">Google Apps Script</span>
+              <span class="skill-tag">Firebase</span>
+              <span class="skill-tag">Netlify</span>
+              <span class="skill-tag">Vercel</span>
+              <span class="skill-tag">Twilio</span>
+              <span class="skill-tag">Supabase</span>
+            </div>
+            <a href="ABE_MELWIN DAVE_RESUME.pdf" class="btn btn--secondary" target="_blank" rel="noopener noreferrer">Download Resume</a>
+          </div>
+
+          <div class="about__visual">
+            <div class="about__visual-content">
+              <div class="about__visual-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </div>
+              <div class="about__visual-text">
+                <p class="about__visual-title">Full-Stack Developer</p>
+                <p class="about__visual-subtitle">Building modern web solutions</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ***** Contact ***** -->
+
+  <section class="contact" id="contact">
+    <div class="row">
+      <h2>Get in Touch</h2>
+      <div class="contact__info fade-in">
+        <p>
+          Interested in working together or have a question? I'm available for freelance projects and full-time opportunities. Let's discuss how I can help bring your ideas to life.
+        </p>
+        <form
+          class="contact__form"
+          action="mailto:abemelwin01@gmail.com"
+          method="POST"
+          enctype="text/plain"
+          onsubmit="handleMailtoForm(event)"
+        >
+          <div class="contact__form-group">
+            <div class="contact__field">
+              <label class="contact__label" for="c-name">Name</label>
+              <input id="c-name" type="text" name="name" class="contact__input" placeholder="Your Name" required />
+            </div>
+            <div class="contact__field">
+              <label class="contact__label" for="c-email">Email</label>
+              <input id="c-email" type="email" name="email" class="contact__input" placeholder="Your Email" required />
+            </div>
+          </div>
+          <div class="contact__field">
+            <label class="contact__label" for="c-message">Message</label>
+            <textarea id="c-message" name="message" class="contact__input contact__textarea" placeholder="Your Message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn contact__submit">Send Message</button>
+        </form>
+        <!-- <p class="contact__or">Or reach me directly at</p>
+        <a href="mailto:abemelwin01@gmail.com" class="btn btn--secondary">abemelwin01@gmail.com</a> -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ***** Footer ***** -->
+
+  <footer role="contentinfo" class="footer">
+    <div class="row">
+      <ul class="footer__social-links">
+        <li class="footer__social-link-item">
+          <a href="https://github.com/abemelwin" title="GitHub Profile" target="_blank" rel="noopener noreferrer">
+            <img src="./images/github.svg" class="footer__social-image" alt="Github">
+          </a>
+        </li>
+        <li class="footer__social-link-item">
+          <a href="mailto:abemelwin01@gmail.com" title="Send Email" class="footer__email-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+      <p class="footer__copy">
+        &copy; <span id="footer-year"></span> Melwin Dave D. Abe &mdash; Designed &amp; built by
+        <a href="https://github.com/abemelwin" class="link">Dave</a>.
+      </p>
+    </div>
+  </footer>
+
+  <a href="#top" class="back-to-top" title="Back to Top">
+    <img src="./images/arrow-up.svg" alt="Back to Top" class="back-to-top__image"/>
+  </a>
+
+  <script src="./index.js"></script>
+</body>
+
+</html>
+
+<!-- Request Access Modal -->
+<div id="request-access-modal" class="request-access-modal" aria-hidden="true">
+  <div class="request-access-modal__overlay" data-action="close"></div>
+  <div class="request-access-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="request-access-title">
+    <button class="request-access-modal__close" aria-label="Close" data-action="close">×</button>
+    <h3 id="request-access-title">Request Access</h3>
+    <p class="request-access-modal__subtitle">Send a request to access this private repository. I will review and reply by email.</p>
+    <form id="request-access-form" class="request-access-form">
+      <input type="hidden" name="_subject" value="Access Request from Portfolio">
+      <input type="hidden" name="project" id="request-project" value="">
+      <div class="form-row">
+        <label for="ra-name">Your name</label>
+        <input id="ra-name" name="name" required />
+      </div>
+      <div class="form-row">
+        <label for="ra-email">Your email</label>
+        <input id="ra-email" name="email" type="email" required />
+      </div>
+      <div class="form-row">
+        <label for="ra-message">Message</label>
+        <textarea id="ra-message" name="message" rows="4" required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn">Send Request</button>
+        <button type="button" class="btn btn--outline" data-action="close">Cancel</button>
+      </div>
+      <div id="ra-status" class="ra-status" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
