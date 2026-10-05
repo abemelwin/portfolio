@@ -363,9 +363,9 @@ function showToast(message, duration = 3000) {
 const PRIVATE_SHOWCASE_PROJECTS = [
   {
     name: 'esprint-portal',
-    description: 'Private company portal for ES Print Media Inc. — central hub for internal operations, content management, scheduling, reporting, and team coordination across departments.',
+    description: 'ES Print Media Operations Portal — a full-stack enterprise platform consolidating check monitoring, machine inventory, sales quotation workflows, and field service dispatch into one secure business operations hub.',
     language: 'TypeScript',
-    topics: ['typescript', 'nextjs', 'internal-tool', 'tailwindcss', 'portal', 'dashboard', 'esprint'],
+    topics: ['typescript', 'nextjs', 'enterprise-portal', 'rbac', 'aws', 'postgresql', 'tailwindcss', 'erp', 'operations-dashboard'],
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/esprint-portal',
