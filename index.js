@@ -883,36 +883,91 @@ function injectCodePreviews() {
 })();
 
 /* --------------------------------------------------------------------------
-   15. Contact Form Handler (Mailto Direct Open)
+   15. Contact Form Handler
    -------------------------------------------------------------------------- */
-function handleMailtoForm(e) {
+function buildMailtoLink(name, email, subjectVal, message) {
+  const body = `Hi Melwin,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+  return `mailto:abemelwin01@gmail.com?subject=${encodeURIComponent(subjectVal)}&body=${encodeURIComponent(body)}`;
+}
+
+async function handleContactForm(e) {
   e.preventDefault();
   const form = e.target;
   const btn = form.querySelector('.contact__submit');
 
-  const name = form.querySelector('#c-name').value;
-  const email = form.querySelector('#c-email').value;
-  const subjectVal = (form.querySelector('#c-subject') && form.querySelector('#c-subject').value) || `Portfolio Inquiry from ${name}`;
-  const message = form.querySelector('#c-message').value;
+  const name = (form.querySelector('#c-name')?.value || '').trim();
+  const email = (form.querySelector('#c-email')?.value || '').trim();
+  const subjectVal = (form.querySelector('#c-subject')?.value || '').trim() || `Portfolio Inquiry from ${name || 'Visitor'}`;
+  const message = (form.querySelector('#c-message')?.value || '').trim();
 
-  const body = `Hi Melwin,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
-  const mailtoLink = `mailto:abemelwin01@gmail.com?subject=${encodeURIComponent(subjectVal)}&body=${encodeURIComponent(body)}`;
-
-  if (btn) {
-    btn.textContent = 'Opening Mail Client…';
-    btn.disabled = true;
+  if (!name || !email || !message) {
+    showToast('Please fill in your name, email, and message.');
+    return;
   }
 
-  showToast('Opening your email client... ✉️');
+  const submitText = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span>Sending…</span>';
+  }
 
-  setTimeout(() => {
-    window.location.href = mailtoLink;
-    if (btn) {
-      btn.innerHTML = `<span>Send Message</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
+  const endpoint = (form.dataset.formEndpoint || '').trim();
+
+  try {
+    if (endpoint) {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          subject: subjectVal,
+          message,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      showToast('Message sent successfully! ✉️');
+      form.reset();
+      return;
+    }
+
+    showToast('Opening your email client... ✉️');
+    const mailtoLink = buildMailtoLink(name, email, subjectVal, message);
+
+    setTimeout(() => {
+      window.location.href = mailtoLink;
+      form.reset();
+      if (btn) {
+        btn.innerHTML = submitText;
+        btn.disabled = false;
+      }
+    }, 400);
+  } catch (error) {
+    console.error('Contact form send failed:', error);
+    showToast('Your email app will open so you can send the message manually.');
+
+    const fallbackLink = buildMailtoLink(name, email, subjectVal, message);
+    setTimeout(() => {
+      window.location.href = fallbackLink;
+      form.reset();
+      if (btn) {
+        btn.innerHTML = submitText;
+        btn.disabled = false;
+      }
+    }, 400);
+  } finally {
+    if (btn && btn.innerHTML.includes('Sending')) {
+      btn.innerHTML = submitText;
       btn.disabled = false;
     }
-    form.reset();
-  }, 400);
+  }
 }
 
 /* --------------------------------------------------------------------------

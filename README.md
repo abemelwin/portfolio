@@ -49,6 +49,16 @@ Then open [http://localhost:8000](http://localhost:8000) in your browser.
 
 The projects section fetches public repositories for the GitHub username configured in the `data-github-username` attribute in `index.html`. Update that attribute if the portfolio owner changes.
 
+## Contact Form Setup
+
+The contact form supports a real email service when you add a Formspree or similar endpoint to the form HTML:
+
+```html
+<form class="contact__form" data-form-endpoint="https://formspree.io/f/your-form-id" ...>
+```
+
+If no endpoint is configured, the form falls back to opening the visitor's default email app with a pre-filled message so they can send it manually.
+
 ## Deployment
 
 Because this is a static website, it can be deployed to GitHub Pages, Netlify, Vercel, or any static hosting provider. Upload the project files while preserving the `images/` and `fonts/` directories.
