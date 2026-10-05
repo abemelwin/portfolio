@@ -49,46 +49,73 @@
 
 <body>
 
-  <!-- Award-Winning Multilingual Greeting & Curved Curtain Preloader -->
-  <div class="page-loader" id="page-loader" aria-live="polite" aria-busy="true">
-    <div class="page-loader__glow" aria-hidden="true"></div>
+  <!-- Pang-Malakasang Developer Cyber Terminal & HUD Preloader -->
+  <div class="page-loader dev-loader" id="page-loader" aria-live="polite" aria-busy="true">
+    <div class="dev-loader__scanlines" aria-hidden="true"></div>
+    <div class="dev-loader__grid" aria-hidden="true"></div>
+    <div class="dev-loader__glow" aria-hidden="true"></div>
 
-    <div class="page-loader__inner">
-      <!-- Top header meta -->
-      <div class="page-loader__header">
-        <div class="page-loader__meta-left">
-          <span class="page-loader__live-dot" aria-hidden="true"></span>
-          <span class="page-loader__name-title">MELWIN DAVE D. ABE</span>
+    <div class="dev-loader__container">
+      <!-- HUD Top Bar -->
+      <div class="dev-loader__hud-top">
+        <div class="dev-loader__hud-left">
+          <span class="dev-loader__dot dev-loader__dot--red"></span>
+          <span class="dev-loader__dot dev-loader__dot--yellow"></span>
+          <span class="dev-loader__dot dev-loader__dot--green"></span>
+          <span class="dev-loader__hud-title">bash - session://melwin-dave-abe.dev</span>
         </div>
-        <div class="page-loader__meta-right">
-          <span class="page-loader__pill">PORTFOLIO &copy; 2026</span>
+        <div class="dev-loader__hud-right">
+          <span class="dev-loader__badge dev-loader__badge--pulse">● SYSTEM ONLINE</span>
+          <span class="dev-loader__badge">AWS: AP-SOUTHEAST-1</span>
+          <span class="dev-loader__badge">TLSv1.3 ENCRYPTED</span>
         </div>
       </div>
 
-      <!-- Center Multilingual Greeting -->
-      <div class="page-loader__center">
-        <div class="page-loader__greeting-wrap">
-          <span class="page-loader__greeting-dot" aria-hidden="true"></span>
-          <h1 class="page-loader__greeting-text" id="loader-greeting-text">Hello</h1>
+      <!-- Main Developer Terminal Window -->
+      <div class="dev-loader__terminal">
+        <div class="dev-loader__cmd-line">
+          <span class="dev-loader__prompt">melwin@dev-station:~$</span>
+          <span class="dev-loader__cmd" id="dev-loader-cmd">init --developer "Melwin Dave D. Abe" --mode=production</span>
+          <span class="dev-loader__cursor">_</span>
         </div>
-        <p class="page-loader__subtext" id="loader-subtext">FULL-STACK DEVELOPER &bull; CLOUD ARCHITECT</p>
+
+        <div class="dev-loader__logs" id="dev-loader-logs">
+          <!-- Live compiling logs will be injected here -->
+        </div>
       </div>
 
-      <!-- Bottom footer meta & counter -->
-      <div class="page-loader__footer">
-        <div class="page-loader__location">
-          <span>BATANGAS, PH &bull; [13.75&deg; N, 121.05&deg; E]</span>
+      <!-- Bottom Telemetry & Visualizer HUD -->
+      <div class="dev-loader__hud-bottom">
+        <div class="dev-loader__visualizer" aria-hidden="true">
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
         </div>
-        <div class="page-loader__counter-box">
-          <span class="page-loader__counter" id="loader-counter">0%</span>
+
+        <div class="dev-loader__center-telemetry">
+          <div class="dev-loader__progress-track">
+            <div class="dev-loader__progress-fill" id="dev-loader-progress-fill"></div>
+            <div class="dev-loader__progress-spark"></div>
+          </div>
+          <div class="dev-loader__status-text" id="dev-loader-status-text">DEPLOYING CORE ARCHITECTURE...</div>
+        </div>
+
+        <div class="dev-loader__counter-wrap">
+          <div class="dev-loader__counter" id="dev-loader-counter">000%</div>
         </div>
       </div>
     </div>
 
-    <!-- Curved SVG Curtain Mask -->
-    <svg class="page-loader__curve-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <path id="loader-curve-path" d="M 0 0 L 100 0 L 100 100 Q 50 100 0 100 Z" fill="#080a14" />
-    </svg>
+    <!-- Shutter Split Panels for Cinematic Reveal -->
+    <div class="dev-loader__shutter dev-loader__shutter--top" aria-hidden="true"></div>
+    <div class="dev-loader__shutter dev-loader__shutter--bottom" aria-hidden="true"></div>
   </div>
 
   <!-- Ambient Aurora Lighting Background -->

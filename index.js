@@ -1065,120 +1065,120 @@ window.addEventListener('keydown', function handleFirstTab(e) {
 });
 
 /* --------------------------------------------------------------------------
-   Award-Winning Multilingual Greeting & Curved Curtain Preloader
+   God-Tier Developer Cyber Terminal & HUD Preloader
    -------------------------------------------------------------------------- */
-(function initGreetingCurtainPreloader() {
+(function initCyberTerminalPreloader() {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
-  const greetingEl = document.getElementById('loader-greeting-text');
-  const counterEl = document.getElementById('loader-counter');
-  const curvePath = document.getElementById('loader-curve-path');
-  const innerEl = loader.querySelector('.page-loader__inner');
+  const logsEl = document.getElementById('dev-loader-logs');
+  const counterEl = document.getElementById('dev-loader-counter');
+  const fillEl = document.getElementById('dev-loader-progress-fill');
+  const statusEl = document.getElementById('dev-loader-status-text');
 
-  const words = ['Hello', 'Kamusta', 'Bonjour', 'Konnichiwa', 'Hola', 'Ciao', 'Welcome'];
-  let wordIndex = 0;
-  let isExiting = false;
-
-  // Word cycler
-  const wordInterval = setInterval(() => {
-    if (wordIndex < words.length - 1) {
-      wordIndex++;
-      if (greetingEl) {
-        greetingEl.style.opacity = '0';
-        greetingEl.style.transform = 'translateY(8px)';
-        setTimeout(() => {
-          greetingEl.textContent = words[wordIndex];
-          greetingEl.style.opacity = '1';
-          greetingEl.style.transform = 'translateY(0)';
-        }, 80);
-      }
-    } else {
-      clearInterval(wordInterval);
+  const logSteps = [
+    {
+      progress: 20,
+      status: 'INITIALIZING_CORE_PIPELINES...',
+      html: '<div class="log-item log-item--ok"><span>✔ [01/04]</span> <span>⚡ Initializing Next.js 15, React 19 &amp; TypeScript core...</span></div>'
+    },
+    {
+      progress: 50,
+      status: 'CONNECTING_AWS_INFRASTRUCTURE...',
+      html: '<div class="log-item log-item--aws"><span>✔ [02/04]</span> <span>☁️ Connecting AWS Cloud (EC2, S3, RDS, CloudFront)...</span></div>'
+    },
+    {
+      progress: 80,
+      status: 'MOUNTING_BACKEND_SYSTEMS...',
+      html: '<div class="log-item log-item--engine"><span>✔ [03/04]</span> <span>🛠️ Mounting Node.js, Laravel, PostgreSQL &amp; Supabase...</span></div>'
+    },
+    {
+      progress: 100,
+      status: 'ACCESS_GRANTED // EXECUTING_PORTFOLIO',
+      html: '<div class="log-item log-item--success"><span>✔ [04/04]</span> <span>🚀 Build completed successfully. ACCESS GRANTED.</span></div>'
     }
-  }, 220);
+  ];
 
-  // Smooth Percentage Counter
   let currentPercent = 0;
-  const targetDuration = 1600;
-  const startTime = performance.now();
+  let targetPercent = 15;
+  let logIndex = 0;
+  let pageHasLoaded = false;
+  let isBreached = false;
 
-  function updateCounter(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(1, elapsed / targetDuration);
-    // Smooth easeOutQuad
-    const eased = 1 - (1 - progress) * (1 - progress);
-    currentPercent = Math.floor(eased * 100);
+  function triggerShutterBreach() {
+    if (isBreached) return;
+    isBreached = true;
 
-    if (counterEl) counterEl.textContent = currentPercent + '%';
-
-    if (progress < 1) {
-      requestAnimationFrame(updateCounter);
-    } else {
-      if (counterEl) counterEl.textContent = '100%';
-      setTimeout(triggerCurtainExit, 260);
-    }
-  }
-
-  requestAnimationFrame(updateCounter);
-
-  // Cinematic Curved Curtain Exit & Hero Reveal
-  function triggerCurtainExit() {
-    if (isExiting) return;
-    isExiting = true;
-
-    // Fade and lift inner text
-    if (innerEl) {
-      innerEl.style.opacity = '0';
-      innerEl.style.transform = 'translateY(-30px) scale(0.96)';
-    }
-
-    // Morph SVG path curve upward
-    const curveDuration = 850;
-    const exitStartTime = performance.now();
-    const initialCurve = 100; // Q 50 100
-    const targetCurve = 0;    // Q 50 0 (flat at top)
-
-    function animateCurtain(time) {
-      const timeElapsed = time - exitStartTime;
-      const t = Math.min(1, timeElapsed / curveDuration);
-      
-      // Cubic bezier easeInOut (0.76, 0, 0.24, 1)
-      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      
-      const currentY = -ease * 100; // Loader translates up from 0% to -100%
-      const curveArch = initialCurve - (ease * initialCurve * 1.3); // Curve arches dynamically
-      const boundedCurve = Math.max(0, curveArch);
-
-      loader.style.transform = `translateY(${currentY}%)`;
-
-      if (curvePath) {
-        curvePath.setAttribute('d', `M 0 0 L 100 0 L 100 ${100 - ease * 100} Q 50 ${boundedCurve} 0 ${100 - ease * 100} Z`);
-      }
-
-      if (t < 1) {
-        requestAnimationFrame(animateCurtain);
-      } else {
-        document.body.classList.add('is-loaded');
-        loader.style.display = 'none';
-        loader.remove();
-
-        // Trigger entrance animations for hero if GSAP is available
-        if (typeof gsap !== 'undefined') {
-          gsap.fromTo('.nav', { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
-          gsap.fromTo('.hero__badge', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, delay: 0.1, ease: 'power3.out' });
-          gsap.fromTo('.hero__title', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: 'power3.out' });
-          gsap.fromTo('.hero__description', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.3, ease: 'power3.out' });
-          gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.4, ease: 'power3.out' });
-          gsap.fromTo('.hero__stats-row', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.5, ease: 'power3.out' });
-        }
-      }
-    }
+    if (counterEl) counterEl.textContent = '100%';
+    if (fillEl) fillEl.style.width = '100%';
+    if (statusEl) statusEl.textContent = 'ACCESS GRANTED // LAUNCHING INTERFACE';
 
     setTimeout(() => {
-      requestAnimationFrame(animateCurtain);
-    }, 150);
+      loader.classList.add('dev-loader--breach');
+      document.body.classList.add('is-loaded');
+
+      // Trigger high-impact Hero Entrance
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo('.nav', { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.2, ease: 'power3.out' });
+        gsap.fromTo('.hero__badge', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, delay: 0.35, ease: 'back.out(1.7)' });
+        gsap.fromTo('.hero__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.45, ease: 'power3.out' });
+        gsap.fromTo('.hero__description', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.6, ease: 'power3.out' });
+        gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.7, ease: 'power3.out' });
+        gsap.fromTo('.hero__stats-row', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.8, ease: 'power3.out' });
+      }
+
+      setTimeout(() => {
+        loader.style.display = 'none';
+        loader.remove();
+      }, 950);
+    }, 380);
   }
+
+  const interval = setInterval(() => {
+    if (pageHasLoaded) {
+      targetPercent = 100;
+    } else {
+      if (targetPercent < 90) {
+        targetPercent += Math.floor(Math.random() * 9) + 3;
+      }
+    }
+
+    if (currentPercent < targetPercent) {
+      currentPercent += Math.ceil((targetPercent - currentPercent) * 0.35) || 1;
+      if (currentPercent > 100) currentPercent = 100;
+
+      const formatted = String(currentPercent).padStart(3, '0') + '%';
+      if (counterEl) counterEl.textContent = formatted;
+      if (fillEl) fillEl.style.width = currentPercent + '%';
+
+      // Check log injections
+      if (logIndex < logSteps.length && currentPercent >= logSteps[logIndex].progress) {
+        if (logsEl) {
+          logsEl.insertAdjacentHTML('beforeend', logSteps[logIndex].html);
+        }
+        if (statusEl) {
+          statusEl.textContent = logSteps[logIndex].status;
+        }
+        logIndex++;
+      }
+    }
+
+    if (currentPercent >= 100 && pageHasLoaded) {
+      clearInterval(interval);
+      triggerShutterBreach();
+    }
+  }, 35);
+
+  window.addEventListener('load', () => {
+    pageHasLoaded = true;
+    targetPercent = 100;
+  });
+
+  // Safety fallback after 2.8s
+  setTimeout(() => {
+    pageHasLoaded = true;
+    targetPercent = 100;
+  }, 2800);
 })();
 
 const yearEl = document.getElementById('footer-year');
