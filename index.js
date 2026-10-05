@@ -1064,6 +1064,16 @@ window.addEventListener('keydown', function handleFirstTab(e) {
   }
 });
 
+window.addEventListener('load', () => {
+  const loader = document.getElementById('page-loader');
+  if (!loader) return;
+
+  setTimeout(() => {
+    document.body.classList.add('is-loaded');
+    setTimeout(() => loader.remove(), 700);
+  }, 500);
+});
+
 const yearEl = document.getElementById('footer-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
