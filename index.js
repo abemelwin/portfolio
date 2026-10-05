@@ -1064,23 +1064,99 @@ window.addEventListener('keydown', function handleFirstTab(e) {
   }
 });
 
-window.addEventListener('load', () => {
+/* --------------------------------------------------------------------------
+   Award-Winning Preloader Execution
+   -------------------------------------------------------------------------- */
+(function initPreloader() {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
-  const minimumLoaderMs = 1600;
-  const startedAt = performance.now();
+  const counterEl = document.getElementById('loader-counter');
+  const captionEl = document.getElementById('loader-caption');
+  const fillEl = document.getElementById('loader-progress-fill');
+  const statusEl = document.getElementById('loader-status-text');
 
-  const hideLoader = () => {
-    document.body.classList.add('is-loaded');
-    setTimeout(() => loader.remove(), 700);
-  };
+  let currentPercent = 0;
+  let targetPercent = 15;
+  let pageHasLoaded = false;
+  let isDone = false;
 
-  const elapsed = performance.now() - startedAt;
-  const remaining = Math.max(0, minimumLoaderMs - elapsed);
+  const captions = [
+    { threshold: 0, caption: '// Initializing core architecture & styles', status: 'INITIALIZING...' },
+    { threshold: 35, caption: '// Compiling interactive UI modules & GSAP engine', status: 'COMPILING...' },
+    { threshold: 70, caption: '// Establishing cloud assets & portfolio data', status: 'CONNECTING...' },
+    { threshold: 99, caption: '// System ready • Welcome to my portfolio', status: 'READY' }
+  ];
 
-  setTimeout(hideLoader, remaining);
-});
+  function updateStatus(val) {
+    if (!captionEl) return;
+    for (let i = captions.length - 1; i >= 0; i--) {
+      if (val >= captions[i].threshold) {
+        if (captionEl.textContent !== captions[i].caption) {
+          captionEl.textContent = captions[i].caption;
+        }
+        if (statusEl && statusEl.textContent !== captions[i].status) {
+          statusEl.textContent = captions[i].status;
+        }
+        break;
+      }
+    }
+  }
+
+  function finishLoader() {
+    if (isDone) return;
+    isDone = true;
+
+    if (counterEl) counterEl.textContent = '100%';
+    if (fillEl) fillEl.style.width = '100%';
+    updateStatus(100);
+
+    setTimeout(() => {
+      loader.classList.add('page-loader--exiting');
+      document.body.classList.add('is-loaded');
+
+      setTimeout(() => {
+        loader.remove();
+      }, 900);
+    }, 280);
+  }
+
+  const interval = setInterval(() => {
+    if (pageHasLoaded) {
+      targetPercent = 100;
+    } else {
+      if (targetPercent < 90) {
+        targetPercent += Math.floor(Math.random() * 8) + 2;
+      }
+    }
+
+    if (currentPercent < targetPercent) {
+      currentPercent += Math.ceil((targetPercent - currentPercent) * 0.32) || 1;
+      if (currentPercent > 100) currentPercent = 100;
+
+      const formatted = String(currentPercent).padStart(3, '0') + '%';
+      if (counterEl) counterEl.textContent = formatted;
+      if (fillEl) fillEl.style.width = currentPercent + '%';
+      updateStatus(currentPercent);
+    }
+
+    if (currentPercent >= 100 && pageHasLoaded) {
+      clearInterval(interval);
+      finishLoader();
+    }
+  }, 35);
+
+  window.addEventListener('load', () => {
+    pageHasLoaded = true;
+    targetPercent = 100;
+  });
+
+  // Safety fallback after 3.2s
+  setTimeout(() => {
+    pageHasLoaded = true;
+    targetPercent = 100;
+  }, 3200);
+})();
 
 const yearEl = document.getElementById('footer-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();

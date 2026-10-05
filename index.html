@@ -49,11 +49,51 @@
 
 <body>
 
+  <!-- Premium Creative Developer Page Loader -->
   <div class="page-loader" id="page-loader" aria-live="polite" aria-busy="true">
     <div class="page-loader__glow" aria-hidden="true"></div>
-    <div class="page-loader__brand-wrap" aria-label="Melwin Dave D. Abe portfolio">
-      <div class="page-loader__brand">MDA</div>
-      <div class="page-loader__name">Melwin Dave D. Abe</div>
+    
+    <div class="page-loader__inner">
+      <!-- Top meta bar -->
+      <div class="page-loader__topbar">
+        <div class="page-loader__identity">
+          <span class="page-loader__badge-tag">PORTFOLIO '26</span>
+          <span class="page-loader__identity-name">MELWIN DAVE D. ABE</span>
+        </div>
+        <div class="page-loader__status-pill">
+          <span class="page-loader__status-dot"></span>
+          <span class="page-loader__status-text" id="loader-status-text">INITIALIZING...</span>
+        </div>
+      </div>
+
+      <!-- Center Brand & Counter -->
+      <div class="page-loader__center">
+        <div class="page-loader__brand-circle">
+          <div class="page-loader__brand-core">MDA</div>
+          <div class="page-loader__orbit page-loader__orbit--1"></div>
+          <div class="page-loader__orbit page-loader__orbit--2"></div>
+        </div>
+        
+        <div class="page-loader__counter-wrap">
+          <div class="page-loader__counter" id="loader-counter">000%</div>
+          <div class="page-loader__caption" id="loader-caption">// Loading core systems &amp; architecture</div>
+        </div>
+
+        <!-- Progress bar track -->
+        <div class="page-loader__progress-track" aria-hidden="true">
+          <div class="page-loader__progress-fill" id="loader-progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Bottom meta bar -->
+      <div class="page-loader__bottombar">
+        <div class="page-loader__meta-left">
+          <span>PHILIPPINES [13.75° N, 121.05° E]</span>
+        </div>
+        <div class="page-loader__meta-right">
+          <span>FULL-STACK • CLOUD • NEXT.JS • AWS</span>
+        </div>
+      </div>
     </div>
   </div>
 
