@@ -68,13 +68,8 @@
 <div align="center">
 
   <a href="https://abemelwin.github.io/portfolio/">
-    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,js,tailwind,vue,php,laravel,nodejs,express,postgresql,mysql,supabase,firebase,prisma,docker,git,github,vercel&perline=12" alt="Tech Skills Grid" />
+    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,js,tailwind,vue,php,laravel,nodejs,express,postgresql,mysql,supabase,firebase,prisma,docker,aws,git,github,vercel&perline=10" alt="Tech Skills Grid" />
   </a>
-
-  <br />
-  <br />
-
-  <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=FF9900" alt="AWS" />
 
 </div>
 
