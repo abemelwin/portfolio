@@ -1068,10 +1068,18 @@ window.addEventListener('load', () => {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
-  setTimeout(() => {
+  const minimumLoaderMs = 1600;
+  const startedAt = performance.now();
+
+  const hideLoader = () => {
     document.body.classList.add('is-loaded');
     setTimeout(() => loader.remove(), 700);
-  }, 500);
+  };
+
+  const elapsed = performance.now() - startedAt;
+  const remaining = Math.max(0, minimumLoaderMs - elapsed);
+
+  setTimeout(hideLoader, remaining);
 });
 
 const yearEl = document.getElementById('footer-year');
