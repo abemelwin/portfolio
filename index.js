@@ -1065,97 +1065,120 @@ window.addEventListener('keydown', function handleFirstTab(e) {
 });
 
 /* --------------------------------------------------------------------------
-   Award-Winning Preloader Execution
+   Award-Winning Multilingual Greeting & Curved Curtain Preloader
    -------------------------------------------------------------------------- */
-(function initPreloader() {
+(function initGreetingCurtainPreloader() {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
+  const greetingEl = document.getElementById('loader-greeting-text');
   const counterEl = document.getElementById('loader-counter');
-  const captionEl = document.getElementById('loader-caption');
-  const fillEl = document.getElementById('loader-progress-fill');
-  const statusEl = document.getElementById('loader-status-text');
+  const curvePath = document.getElementById('loader-curve-path');
+  const innerEl = loader.querySelector('.page-loader__inner');
 
-  let currentPercent = 0;
-  let targetPercent = 15;
-  let pageHasLoaded = false;
-  let isDone = false;
+  const words = ['Hello', 'Kamusta', 'Bonjour', 'Konnichiwa', 'Hola', 'Ciao', 'Welcome'];
+  let wordIndex = 0;
+  let isExiting = false;
 
-  const captions = [
-    { threshold: 0, caption: '// Initializing core architecture & styles', status: 'INITIALIZING...' },
-    { threshold: 35, caption: '// Compiling interactive UI modules & GSAP engine', status: 'COMPILING...' },
-    { threshold: 70, caption: '// Establishing cloud assets & portfolio data', status: 'CONNECTING...' },
-    { threshold: 99, caption: '// System ready • Welcome to my portfolio', status: 'READY' }
-  ];
-
-  function updateStatus(val) {
-    if (!captionEl) return;
-    for (let i = captions.length - 1; i >= 0; i--) {
-      if (val >= captions[i].threshold) {
-        if (captionEl.textContent !== captions[i].caption) {
-          captionEl.textContent = captions[i].caption;
-        }
-        if (statusEl && statusEl.textContent !== captions[i].status) {
-          statusEl.textContent = captions[i].status;
-        }
-        break;
+  // Word cycler
+  const wordInterval = setInterval(() => {
+    if (wordIndex < words.length - 1) {
+      wordIndex++;
+      if (greetingEl) {
+        greetingEl.style.opacity = '0';
+        greetingEl.style.transform = 'translateY(8px)';
+        setTimeout(() => {
+          greetingEl.textContent = words[wordIndex];
+          greetingEl.style.opacity = '1';
+          greetingEl.style.transform = 'translateY(0)';
+        }, 80);
       }
+    } else {
+      clearInterval(wordInterval);
+    }
+  }, 220);
+
+  // Smooth Percentage Counter
+  let currentPercent = 0;
+  const targetDuration = 1600;
+  const startTime = performance.now();
+
+  function updateCounter(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / targetDuration);
+    // Smooth easeOutQuad
+    const eased = 1 - (1 - progress) * (1 - progress);
+    currentPercent = Math.floor(eased * 100);
+
+    if (counterEl) counterEl.textContent = currentPercent + '%';
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCounter);
+    } else {
+      if (counterEl) counterEl.textContent = '100%';
+      setTimeout(triggerCurtainExit, 260);
     }
   }
 
-  function finishLoader() {
-    if (isDone) return;
-    isDone = true;
+  requestAnimationFrame(updateCounter);
 
-    if (counterEl) counterEl.textContent = '100%';
-    if (fillEl) fillEl.style.width = '100%';
-    updateStatus(100);
+  // Cinematic Curved Curtain Exit & Hero Reveal
+  function triggerCurtainExit() {
+    if (isExiting) return;
+    isExiting = true;
+
+    // Fade and lift inner text
+    if (innerEl) {
+      innerEl.style.opacity = '0';
+      innerEl.style.transform = 'translateY(-30px) scale(0.96)';
+    }
+
+    // Morph SVG path curve upward
+    const curveDuration = 850;
+    const exitStartTime = performance.now();
+    const initialCurve = 100; // Q 50 100
+    const targetCurve = 0;    // Q 50 0 (flat at top)
+
+    function animateCurtain(time) {
+      const timeElapsed = time - exitStartTime;
+      const t = Math.min(1, timeElapsed / curveDuration);
+      
+      // Cubic bezier easeInOut (0.76, 0, 0.24, 1)
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      
+      const currentY = -ease * 100; // Loader translates up from 0% to -100%
+      const curveArch = initialCurve - (ease * initialCurve * 1.3); // Curve arches dynamically
+      const boundedCurve = Math.max(0, curveArch);
+
+      loader.style.transform = `translateY(${currentY}%)`;
+
+      if (curvePath) {
+        curvePath.setAttribute('d', `M 0 0 L 100 0 L 100 ${100 - ease * 100} Q 50 ${boundedCurve} 0 ${100 - ease * 100} Z`);
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(animateCurtain);
+      } else {
+        document.body.classList.add('is-loaded');
+        loader.style.display = 'none';
+        loader.remove();
+
+        // Trigger entrance animations for hero if GSAP is available
+        if (typeof gsap !== 'undefined') {
+          gsap.fromTo('.nav', { y: -30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' });
+          gsap.fromTo('.hero__badge', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, delay: 0.1, ease: 'power3.out' });
+          gsap.fromTo('.hero__title', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: 'power3.out' });
+          gsap.fromTo('.hero__description', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.3, ease: 'power3.out' });
+          gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.4, ease: 'power3.out' });
+          gsap.fromTo('.hero__stats-row', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.5, ease: 'power3.out' });
+        }
+      }
+    }
 
     setTimeout(() => {
-      loader.classList.add('page-loader--exiting');
-      document.body.classList.add('is-loaded');
-
-      setTimeout(() => {
-        loader.remove();
-      }, 900);
-    }, 280);
+      requestAnimationFrame(animateCurtain);
+    }, 150);
   }
-
-  const interval = setInterval(() => {
-    if (pageHasLoaded) {
-      targetPercent = 100;
-    } else {
-      if (targetPercent < 90) {
-        targetPercent += Math.floor(Math.random() * 8) + 2;
-      }
-    }
-
-    if (currentPercent < targetPercent) {
-      currentPercent += Math.ceil((targetPercent - currentPercent) * 0.32) || 1;
-      if (currentPercent > 100) currentPercent = 100;
-
-      const formatted = String(currentPercent).padStart(3, '0') + '%';
-      if (counterEl) counterEl.textContent = formatted;
-      if (fillEl) fillEl.style.width = currentPercent + '%';
-      updateStatus(currentPercent);
-    }
-
-    if (currentPercent >= 100 && pageHasLoaded) {
-      clearInterval(interval);
-      finishLoader();
-    }
-  }, 35);
-
-  window.addEventListener('load', () => {
-    pageHasLoaded = true;
-    targetPercent = 100;
-  });
-
-  // Safety fallback after 3.2s
-  setTimeout(() => {
-    pageHasLoaded = true;
-    targetPercent = 100;
-  }, 3200);
 })();
 
 const yearEl = document.getElementById('footer-year');
