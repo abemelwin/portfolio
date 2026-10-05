@@ -353,24 +353,12 @@ function showToast(message, duration = 3000) {
 })();
 
 /* --------------------------------------------------------------------------
-   10a. PRIVATE / MANUAL SHOWCASE PROJECTS
+   10a. MANUAL SHOWCASE PROJECTS
    -------------------------------------------------------------------------- */
 /*
-   PALITAN MO ANG MGA VALUES SA IBABA (huwag galawin ang mga property names,
-   `name:`, `description:`, atbp. — palitan lang ang mga nasa loob ng quotes).
-
-   name          -> Pangalan ng project mo (basta't may spaces/dash, ipapaganda
-                     na siya automatic sa card, hal. "print-media-erp" -> "Print Media Erp")
-   description   -> 1-2 sentence na paglalarawan
-   language      -> Pangunahing tech (hal. 'Laravel', 'Vue.js', 'PHP')
-   topics        -> listahan ng mga tags/keywords (para sa filter/search)
-   private       -> IWANAN NA TRUE — ito yung nagpapalabas ng "Request Access"
-                     button sa halip na "View on GitHub" link
-   html_url      -> pwede mong ilagay dito ang portfolio/demo page mo, o
-                     iwanan lang sa github.com/username
-
-   Gusto magdagdag pa ng isa pang private project? I-copy mo lang yung isang
-   { ... } block sa ibaba, i-paste pagkatapos ng comma, tapos palitan ang laman.
+   These entries are shown in the portfolio. Set `private: true` only if you want
+   the project card to render as a hidden/private item with a "Request Access"
+   button instead of a normal public project link.
 */
 const PRIVATE_SHOWCASE_PROJECTS = [
   {
@@ -381,7 +369,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/esprint-check-monitoring',
-    private: true,
+    private: false,
     updated_at: '2026-08-28'
   },
   {
@@ -392,7 +380,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/spmt',
-    private: true,
+    private: false,
     updated_at: '2026-08-28'
   },
   {
@@ -403,7 +391,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/sales-portal',
-    private: true,
+    private: false,
     updated_at: '2026-08-28'
   },
   {
@@ -414,7 +402,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/Esprint-Service-Monitoring',
-    private: true,
+    private: false,
     updated_at: '2026-07-08'
   },
   {
@@ -425,7 +413,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/scoreboard-app',
-    private: true,
+    private: false,
     updated_at: '2026-07-17'
   }
 ];
