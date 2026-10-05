@@ -1065,120 +1065,118 @@ window.addEventListener('keydown', function handleFirstTab(e) {
 });
 
 /* --------------------------------------------------------------------------
-   God-Tier Developer Cyber Terminal & HUD Preloader
+   God-Tier Developer Cyber Terminal & HUD Preloader (Paced Edition)
    -------------------------------------------------------------------------- */
 (function initCyberTerminalPreloader() {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
+  const cmdEl = document.getElementById('dev-loader-cmd');
   const logsEl = document.getElementById('dev-loader-logs');
   const counterEl = document.getElementById('dev-loader-counter');
   const fillEl = document.getElementById('dev-loader-progress-fill');
   const statusEl = document.getElementById('dev-loader-status-text');
 
-  const logSteps = [
+  const fullCmd = 'init --developer "Melwin Dave D. Abe" --mode=production';
+  let charIndex = 0;
+
+  // 1. Smooth Command Typing Animation
+  const typeTimer = setInterval(() => {
+    if (charIndex < fullCmd.length) {
+      if (cmdEl) cmdEl.textContent += fullCmd[charIndex];
+      charIndex++;
+    } else {
+      clearInterval(typeTimer);
+    }
+  }, 16);
+
+  const logMilestones = [
     {
-      progress: 20,
+      delay: 650,
+      progress: 25,
       status: 'INITIALIZING_CORE_PIPELINES...',
       html: '<div class="log-item log-item--ok"><span>✔ [01/04]</span> <span>⚡ Initializing Next.js 15, React 19 &amp; TypeScript core...</span></div>'
     },
     {
-      progress: 50,
+      delay: 1300,
+      progress: 55,
       status: 'CONNECTING_AWS_INFRASTRUCTURE...',
       html: '<div class="log-item log-item--aws"><span>✔ [02/04]</span> <span>☁️ Connecting AWS Cloud (EC2, S3, RDS, CloudFront)...</span></div>'
     },
     {
-      progress: 80,
+      delay: 1950,
+      progress: 85,
       status: 'MOUNTING_BACKEND_SYSTEMS...',
       html: '<div class="log-item log-item--engine"><span>✔ [03/04]</span> <span>🛠️ Mounting Node.js, Laravel, PostgreSQL &amp; Supabase...</span></div>'
     },
     {
+      delay: 2550,
       progress: 100,
       status: 'ACCESS_GRANTED // EXECUTING_PORTFOLIO',
       html: '<div class="log-item log-item--success"><span>✔ [04/04]</span> <span>🚀 Build completed successfully. ACCESS GRANTED.</span></div>'
     }
   ];
 
-  let currentPercent = 0;
-  let targetPercent = 15;
-  let logIndex = 0;
-  let pageHasLoaded = false;
+  // Schedule log entries
+  logMilestones.forEach(item => {
+    setTimeout(() => {
+      if (logsEl) logsEl.insertAdjacentHTML('beforeend', item.html);
+      if (statusEl) statusEl.textContent = item.status;
+    }, item.delay);
+  });
+
+  // 2. Smooth Counter & Progress Bar (~2.7s total)
+  const totalDuration = 2700;
+  const startTime = performance.now();
   let isBreached = false;
+
+  function updateTelemetry(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / totalDuration);
+    
+    // Smooth custom cubic ease
+    const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+    const currentPercent = Math.floor(ease * 100);
+
+    if (counterEl) counterEl.textContent = String(currentPercent).padStart(3, '0') + '%';
+    if (fillEl) fillEl.style.width = currentPercent + '%';
+
+    if (progress < 1) {
+      requestAnimationFrame(updateTelemetry);
+    } else {
+      if (counterEl) counterEl.textContent = '100%';
+      if (fillEl) fillEl.style.width = '100%';
+      if (statusEl) statusEl.textContent = 'ACCESS GRANTED // LAUNCHING INTERFACE';
+      
+      // 3. Victory Pause (450ms) before Shutter Breach
+      setTimeout(triggerShutterBreach, 450);
+    }
+  }
+
+  requestAnimationFrame(updateTelemetry);
 
   function triggerShutterBreach() {
     if (isBreached) return;
     isBreached = true;
 
-    if (counterEl) counterEl.textContent = '100%';
-    if (fillEl) fillEl.style.width = '100%';
-    if (statusEl) statusEl.textContent = 'ACCESS GRANTED // LAUNCHING INTERFACE';
+    loader.classList.add('dev-loader--breach');
+    document.body.classList.add('is-loaded');
+
+    // Trigger high-impact Hero Entrance
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo('.nav', { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.2, ease: 'power3.out' });
+      gsap.fromTo('.hero__badge', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, delay: 0.35, ease: 'back.out(1.7)' });
+      gsap.fromTo('.hero__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.45, ease: 'power3.out' });
+      gsap.fromTo('.hero__description', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.6, ease: 'power3.out' });
+      gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.7, ease: 'power3.out' });
+      gsap.fromTo('.hero__stats-row', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.8, ease: 'power3.out' });
+    }
 
     setTimeout(() => {
-      loader.classList.add('dev-loader--breach');
-      document.body.classList.add('is-loaded');
-
-      // Trigger high-impact Hero Entrance
-      if (typeof gsap !== 'undefined') {
-        gsap.fromTo('.nav', { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.2, ease: 'power3.out' });
-        gsap.fromTo('.hero__badge', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, delay: 0.35, ease: 'back.out(1.7)' });
-        gsap.fromTo('.hero__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.45, ease: 'power3.out' });
-        gsap.fromTo('.hero__description', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.6, ease: 'power3.out' });
-        gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.7, ease: 'power3.out' });
-        gsap.fromTo('.hero__stats-row', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.8, ease: 'power3.out' });
-      }
-
-      setTimeout(() => {
-        loader.style.display = 'none';
-        loader.remove();
-      }, 950);
-    }, 380);
+      loader.style.display = 'none';
+      loader.remove();
+    }, 950);
   }
-
-  const interval = setInterval(() => {
-    if (pageHasLoaded) {
-      targetPercent = 100;
-    } else {
-      if (targetPercent < 90) {
-        targetPercent += Math.floor(Math.random() * 9) + 3;
-      }
-    }
-
-    if (currentPercent < targetPercent) {
-      currentPercent += Math.ceil((targetPercent - currentPercent) * 0.35) || 1;
-      if (currentPercent > 100) currentPercent = 100;
-
-      const formatted = String(currentPercent).padStart(3, '0') + '%';
-      if (counterEl) counterEl.textContent = formatted;
-      if (fillEl) fillEl.style.width = currentPercent + '%';
-
-      // Check log injections
-      if (logIndex < logSteps.length && currentPercent >= logSteps[logIndex].progress) {
-        if (logsEl) {
-          logsEl.insertAdjacentHTML('beforeend', logSteps[logIndex].html);
-        }
-        if (statusEl) {
-          statusEl.textContent = logSteps[logIndex].status;
-        }
-        logIndex++;
-      }
-    }
-
-    if (currentPercent >= 100 && pageHasLoaded) {
-      clearInterval(interval);
-      triggerShutterBreach();
-    }
-  }, 35);
-
-  window.addEventListener('load', () => {
-    pageHasLoaded = true;
-    targetPercent = 100;
-  });
-
-  // Safety fallback after 2.8s
-  setTimeout(() => {
-    pageHasLoaded = true;
-    targetPercent = 100;
-  }, 2800);
 })();
 
 const yearEl = document.getElementById('footer-year');
