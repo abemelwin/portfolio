@@ -353,12 +353,12 @@ function showToast(message, duration = 3000) {
 })();
 
 /* --------------------------------------------------------------------------
-   10a. MANUAL SHOWCASE PROJECTS
+   10a. PRIVATE / MANUAL SHOWCASE PROJECTS
    -------------------------------------------------------------------------- */
 /*
-   These entries are shown in the portfolio. Set `private: true` only if you want
-   the project card to render as a hidden/private item with a "Request Access"
-   button instead of a normal public project link.
+   Keep `private: true` for projects that should require approval/access before
+   viewing details. This keeps the flow intentional for clients and recruiters
+   who want to request access directly.
 */
 const PRIVATE_SHOWCASE_PROJECTS = [
   {
@@ -369,7 +369,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/esprint-check-monitoring',
-    private: false,
+    private: true,
     updated_at: '2026-08-28'
   },
   {
@@ -380,7 +380,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/spmt',
-    private: false,
+    private: true,
     updated_at: '2026-08-28'
   },
   {
@@ -391,7 +391,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/sales-portal',
-    private: false,
+    private: true,
     updated_at: '2026-08-28'
   },
   {
@@ -402,7 +402,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/Esprint-Service-Monitoring',
-    private: false,
+    private: true,
     updated_at: '2026-07-08'
   },
   {
@@ -413,7 +413,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     stargazers_count: 0,
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/scoreboard-app',
-    private: false,
+    private: true,
     updated_at: '2026-07-17'
   }
 ];
