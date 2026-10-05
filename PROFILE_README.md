@@ -68,7 +68,7 @@
 <div align="center">
 
   <a href="https://abemelwin.github.io/portfolio/">
-    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,js,tailwind,vue,php,laravel,nodejs,express,postgresql,mysql,supabase,firebase,prisma,docker,aws,git,github,vercel&perline=10" alt="Tech Skills Grid" />
+    <img src="https://skillicons.dev/icons?i=nextjs,react,ts,js,tailwind,vue,php,laravel,nodejs,express,postgresql,mysql,supabase,firebase,prisma,docker,git,github,vercel,aws&perline=12" alt="Tech Skills Grid" />
   </a>
 
 </div>
