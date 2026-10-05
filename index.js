@@ -626,7 +626,7 @@ let allProjectsData = [];
       const description = repo.description || 'Production-grade software application engineered with clean code and high performance standards.';
 
       const linksHtml = isPrivate
-        ? `<button type="button" class="btn btn--outline request-access-btn" data-project="${escapeHtml(formattedName)}">Request Access</button>`
+        ? `<button type="button" class="btn btn--outline request-access-btn" data-project="${escapeHtml(formattedName)}">Connect for Access</button>`
         : `<a href="${escapeHtml(repo.html_url || 'https://github.com/abemelwin')}" target="_blank" rel="noopener noreferrer" class="link__text">
              <span>View on GitHub</span>
              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
