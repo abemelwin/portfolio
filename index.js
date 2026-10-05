@@ -1065,31 +1065,131 @@ window.addEventListener('keydown', function handleFirstTab(e) {
 });
 
 /* --------------------------------------------------------------------------
-   God-Tier Developer Cyber Terminal & HUD Preloader (Paced Edition)
+   God-Tier Developer Cyber Terminal & Interactive Neural HUD Preloader
    -------------------------------------------------------------------------- */
-(function initCyberTerminalPreloader() {
+(function initGodTierCyberPreloader() {
   const loader = document.getElementById('page-loader');
   if (!loader) return;
 
+  const canvas = document.getElementById('dev-loader-canvas');
+  const skipBtn = document.getElementById('dev-loader-skip');
   const cmdEl = document.getElementById('dev-loader-cmd');
   const logsEl = document.getElementById('dev-loader-logs');
   const counterEl = document.getElementById('dev-loader-counter');
   const fillEl = document.getElementById('dev-loader-progress-fill');
   const statusEl = document.getElementById('dev-loader-status-text');
 
+  let isBreached = false;
+  let canvasAnimId = null;
+
+  /* --- 1. Interactive Neural Particle Canvas --- */
+  if (canvas && canvas.getContext) {
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      if (isBreached) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const count = Math.min(38, Math.floor((width * height) / 28000));
+    const colors = ['rgba(56, 189, 248, 0.7)', 'rgba(99, 102, 241, 0.65)', 'rgba(168, 85, 247, 0.6)'];
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.7,
+        vy: (Math.random() - 0.5) * 0.7,
+        radius: Math.random() * 1.8 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+
+    let mouseX = width / 2;
+    let mouseY = height / 2;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function drawNeuralNetwork() {
+      if (isBreached) return;
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw connecting lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 110) {
+            const alpha = (1 - dist / 110) * 0.22;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        // Subtle mouse interaction
+        const mdx = p.x - mouseX;
+        const mdy = p.y - mouseY;
+        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mDist < 120) {
+          p.x += (mdx / mDist) * 0.8;
+          p.y += (mdy / mDist) * 0.8;
+        }
+
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      canvasAnimId = requestAnimationFrame(drawNeuralNetwork);
+    }
+
+    drawNeuralNetwork();
+  }
+
+  /* --- 2. Live Command Typing --- */
   const fullCmd = 'init --developer "Melwin Dave D. Abe" --mode=production';
   let charIndex = 0;
-
-  // 1. Smooth Command Typing Animation
   const typeTimer = setInterval(() => {
+    if (isBreached) {
+      clearInterval(typeTimer);
+      return;
+    }
     if (charIndex < fullCmd.length) {
       if (cmdEl) cmdEl.textContent += fullCmd[charIndex];
       charIndex++;
     } else {
       clearInterval(typeTimer);
     }
-  }, 16);
+  }, 15);
 
+  /* --- 3. Structured Compilation Logs --- */
   const logMilestones = [
     {
       delay: 650,
@@ -1117,24 +1217,25 @@ window.addEventListener('keydown', function handleFirstTab(e) {
     }
   ];
 
-  // Schedule log entries
-  logMilestones.forEach(item => {
-    setTimeout(() => {
+  const logTimeouts = [];
+  logMilestones.forEach((item) => {
+    const t = setTimeout(() => {
+      if (isBreached) return;
       if (logsEl) logsEl.insertAdjacentHTML('beforeend', item.html);
       if (statusEl) statusEl.textContent = item.status;
     }, item.delay);
+    logTimeouts.push(t);
   });
 
-  // 2. Smooth Counter & Progress Bar (~2.7s total)
+  /* --- 4. Smooth Telemetry Counter --- */
   const totalDuration = 2700;
   const startTime = performance.now();
-  let isBreached = false;
 
   function updateTelemetry(now) {
+    if (isBreached) return;
     const elapsed = now - startTime;
     const progress = Math.min(1, elapsed / totalDuration);
-    
-    // Smooth custom cubic ease
+
     const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
     const currentPercent = Math.floor(ease * 100);
 
@@ -1147,17 +1248,51 @@ window.addEventListener('keydown', function handleFirstTab(e) {
       if (counterEl) counterEl.textContent = '100%';
       if (fillEl) fillEl.style.width = '100%';
       if (statusEl) statusEl.textContent = 'ACCESS GRANTED // LAUNCHING INTERFACE';
-      
-      // 3. Victory Pause (450ms) before Shutter Breach
-      setTimeout(triggerShutterBreach, 450);
+      setTimeout(triggerShutterBreach, 400);
     }
   }
 
   requestAnimationFrame(updateTelemetry);
 
+  /* --- 5. Interactive Skip Feature (Space / Button / Click) --- */
+  function instantSkip() {
+    if (isBreached) return;
+    logTimeouts.forEach((t) => clearTimeout(t));
+    if (cmdEl) cmdEl.textContent = fullCmd;
+
+    if (logsEl && logsEl.children.length < logMilestones.length) {
+      logsEl.innerHTML = '';
+      logMilestones.forEach((m) => logsEl.insertAdjacentHTML('beforeend', m.html));
+    }
+
+    if (counterEl) counterEl.textContent = '100%';
+    if (fillEl) fillEl.style.width = '100%';
+    if (statusEl) statusEl.textContent = 'ACCESS GRANTED // BYPASSING_TELEMETRY';
+
+    triggerShutterBreach();
+  }
+
+  if (skipBtn) {
+    skipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      instantSkip();
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (isBreached) return;
+    if (e.code === 'Space' || e.key === 'Enter') {
+      e.preventDefault();
+      instantSkip();
+    }
+  });
+
+  /* --- 6. Cinematic Shutter Breach & Hero Reveal --- */
   function triggerShutterBreach() {
     if (isBreached) return;
     isBreached = true;
+
+    if (canvasAnimId) cancelAnimationFrame(canvasAnimId);
 
     loader.classList.add('dev-loader--breach');
     document.body.classList.add('is-loaded');

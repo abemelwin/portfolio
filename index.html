@@ -49,11 +49,27 @@
 
 <body>
 
-  <!-- Pang-Malakasang Developer Cyber Terminal & HUD Preloader -->
+  <!-- God-Tier Developer Cyber Terminal & Interactive Neural HUD Preloader -->
   <div class="page-loader dev-loader" id="page-loader" aria-live="polite" aria-busy="true">
+    <canvas class="dev-loader__canvas" id="dev-loader-canvas" aria-hidden="true"></canvas>
     <div class="dev-loader__scanlines" aria-hidden="true"></div>
     <div class="dev-loader__grid" aria-hidden="true"></div>
     <div class="dev-loader__glow" aria-hidden="true"></div>
+
+    <!-- Hex Memory Stream Sidebar -->
+    <div class="dev-loader__hex-sidebar" aria-hidden="true">
+      <div class="dev-loader__hex-line">0x7FFF8A10 &bull; MEM_ALLOC: 128MB</div>
+      <div class="dev-loader__hex-line">0x9B4021 &bull; SYS_LATENCY: 14ms</div>
+      <div class="dev-loader__hex-line">0x0F4A88 &bull; TLS_CIPHER: AES-256-GCM</div>
+      <div class="dev-loader__hex-line">0x892110 &bull; AWS_REGION: AP-SOUTHEAST-1</div>
+      <div class="dev-loader__hex-line">0x3E11C4 &bull; ENGINE: V8_NEXTJS15</div>
+    </div>
+
+    <!-- Interactive Skip Button Pill -->
+    <button class="dev-loader__skip-btn" id="dev-loader-skip" title="Skip Intro" aria-label="Skip developer intro">
+      <span class="dev-loader__skip-key">SPACE</span>
+      <span class="dev-loader__skip-text">/ CLICK TO SKIP</span>
+    </button>
 
     <div class="dev-loader__container">
       <!-- HUD Top Bar -->
@@ -62,12 +78,12 @@
           <span class="dev-loader__dot dev-loader__dot--red"></span>
           <span class="dev-loader__dot dev-loader__dot--yellow"></span>
           <span class="dev-loader__dot dev-loader__dot--green"></span>
-          <span class="dev-loader__hud-title">bash - session://melwin-dave-abe.dev</span>
+          <span class="dev-loader__hud-title">zsh - melwin@dev-station:~ (production-release)</span>
         </div>
         <div class="dev-loader__hud-right">
-          <span class="dev-loader__badge dev-loader__badge--pulse">● SYSTEM ONLINE</span>
-          <span class="dev-loader__badge">AWS: AP-SOUTHEAST-1</span>
-          <span class="dev-loader__badge">TLSv1.3 ENCRYPTED</span>
+          <span class="dev-loader__badge dev-loader__badge--pulse">● KERNEL ONLINE</span>
+          <span class="dev-loader__badge">AWS CLUSTER</span>
+          <span class="dev-loader__badge">TLSv1.3</span>
         </div>
       </div>
 
@@ -97,6 +113,8 @@
           <div class="dev-loader__bar"></div>
           <div class="dev-loader__bar"></div>
           <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
+          <div class="dev-loader__bar"></div>
         </div>
 
         <div class="dev-loader__center-telemetry">
@@ -104,7 +122,7 @@
             <div class="dev-loader__progress-fill" id="dev-loader-progress-fill"></div>
             <div class="dev-loader__progress-spark"></div>
           </div>
-          <div class="dev-loader__status-text" id="dev-loader-status-text">DEPLOYING CORE ARCHITECTURE...</div>
+          <div class="dev-loader__status-text" id="dev-loader-status-text">INITIALIZING CORE ARCHITECTURE...</div>
         </div>
 
         <div class="dev-loader__counter-wrap">
@@ -113,7 +131,7 @@
       </div>
     </div>
 
-    <!-- Shutter Split Panels for Cinematic Reveal -->
+    <!-- Shutter Split Panels for Cinematic Shutter Breach -->
     <div class="dev-loader__shutter dev-loader__shutter--top" aria-hidden="true"></div>
     <div class="dev-loader__shutter dev-loader__shutter--bottom" aria-hidden="true"></div>
   </div>
