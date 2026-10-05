@@ -17,6 +17,11 @@ This is a responsive static website that presents:
 - HTML5
 - CSS3
 - Vanilla JavaScript
+- Next.js / React / TypeScript
+- Node.js / Express
+- PHP / Laravel
+- PostgreSQL / MySQL / Supabase / Firebase
+- AWS (EC2, S3, CloudFront, Route 53, RDS)
 - GSAP and ScrollTrigger for animations
 - GitHub REST API for project data
 

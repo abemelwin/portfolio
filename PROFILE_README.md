@@ -49,6 +49,7 @@
         <li>🎨 <strong>Frontend:</strong> Next.js, React, TypeScript, Tailwind CSS, GSAP</li>
         <li>⚡ <strong>Backend:</strong> Node.js, Express, PHP, Laravel, REST APIs, Webhooks</li>
         <li>🗄️ <strong>Databases:</strong> PostgreSQL, MySQL, Supabase, Firebase, Prisma</li>
+        <li>☁️ <strong>Cloud:</strong> AWS EC2, S3, CloudFront, Route 53, RDS</li>
         <li>🛠️ <strong>DevOps:</strong> Git, GitHub, Docker, Vercel, CI/CD, Deployment Pipelines</li>
       </ul>
       <p align="center">
@@ -79,6 +80,7 @@
 | **🎨 Modern Frontend** | `Next.js`, `React`, `Vue.js`, `TypeScript`, `JavaScript (ES6+)`, `Tailwind CSS`, `GSAP`, `HTML5 / CSS3` |
 | **⚡ Backend & APIs** | `Node.js`, `Express.js`, `PHP`, `Laravel`, `RESTful APIs`, `Webhooks`, `JWT`, `Server Actions` |
 | **🗄️ Databases & Storage** | `PostgreSQL`, `MySQL`, `Supabase`, `Firebase`, `Prisma`, `Database Design & Modeling` |
+| **☁️ Cloud & Infrastructure** | `AWS EC2`, `AWS S3`, `AWS CloudFront`, `AWS Route 53`, `AWS RDS` |
 | **🛠️ DevOps & Services** | `Git & GitHub`, `Docker`, `Vercel`, `CI/CD`, `Deployment Automation`, `API Integrations` |
 
 ---
