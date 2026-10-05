@@ -362,6 +362,17 @@ function showToast(message, duration = 3000) {
 */
 const PRIVATE_SHOWCASE_PROJECTS = [
   {
+    name: 'esprint-portal',
+    description: 'Private company portal for ES Print Media Inc. — central hub for internal operations, content management, scheduling, reporting, and team coordination across departments.',
+    language: 'TypeScript',
+    topics: ['typescript', 'nextjs', 'internal-tool', 'tailwindcss', 'portal', 'dashboard', 'esprint'],
+    stargazers_count: 0,
+    forks_count: 0,
+    html_url: 'https://github.com/abemelwin/esprint-portal',
+    private: true,
+    updated_at: '2026-09-10'
+  },
+  {
     name: 'esprint-check-monitoring',
     description: 'Internal check monitoring system for ES Print Media Inc. — tracks post-dated checks, hold requests, returns, deposits, partial payments, and collections across multiple branches and subsidiaries.',
     language: 'TypeScript',
