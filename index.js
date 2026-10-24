@@ -1,9 +1,13 @@
 /* ==========================================================================
-   MELWIN DAVE D. ABE — PORTFOLIO JAVASCRIPT ENGINE
-   Interactive Cyber-Glassmorphism, Dynamic Terminal, Project Filtering & UI
+   MELWIN DAVE D. ABE — BENTO PORTFOLIO ENGINE
+   Spotlight cards, live GitHub data, project grid, motion & forms
    ========================================================================== */
 
 'use strict';
+
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const GITHUB_USER = 'abemelwin';
 
 /* --------------------------------------------------------------------------
    1. Toast Notification System
@@ -15,26 +19,20 @@ function showToast(message, duration = 3000) {
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
     <span>${escapeHtml(message)}</span>
   `;
 
   container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, duration);
+  setTimeout(() => toast.remove(), duration);
 }
 
 /* --------------------------------------------------------------------------
-   2. Copy Email to Clipboard Helper
+   2. Copy Email to Clipboard
    -------------------------------------------------------------------------- */
 (function initCopyEmail() {
   document.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.copy-email-btn, #quick-copy-email');
+    const btn = e.target.closest('.copy-email-btn');
     if (!btn) return;
 
     e.preventDefault();
@@ -53,7 +51,7 @@ function showToast(message, duration = 3000) {
         document.execCommand('copy');
         textarea.remove();
       }
-      showToast(`Copied ${email} to clipboard! 📋`);
+      showToast('Email copied to clipboard');
     } catch (err) {
       console.warn('Clipboard copy failed:', err);
       showToast(`Email: ${email}`);
@@ -62,298 +60,312 @@ function showToast(message, duration = 3000) {
 })();
 
 /* --------------------------------------------------------------------------
-   3. Scroll Progress Bar & Nav Blur on Scroll
+   3. Theme Toggle (Dark / Light)
    -------------------------------------------------------------------------- */
-(function initScrollEffects() {
-  const bar = document.getElementById('scroll-progress-bar');
-  const navRow = document.querySelector('.nav-row');
-  const backToTopBtn = document.querySelector('.back-to-top');
+(function initThemeToggle() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
 
-  window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-
-    // Progress Bar
-    if (bar) {
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
-    }
-
-    // Nav Sticky Glass Styling
-    if (navRow) {
-      navRow.classList.toggle('scrolled', scrollTop > 30);
-    }
-
-    // Back to Top Button
-    if (backToTopBtn) {
-      backToTopBtn.classList.toggle('visible', scrollTop > 500);
-    }
-  }, { passive: true });
-})();
-
-/* --------------------------------------------------------------------------
-   4. Mobile Navigation Drawer
-   -------------------------------------------------------------------------- */
-(function initMobileNav() {
-  const toggleBtn = document.getElementById('nav-toggle');
-  const mobileNav = document.getElementById('mobile-nav');
-  const closeBtn = document.getElementById('mobile-nav-close');
-  const overlay = document.getElementById('mobile-nav-overlay');
-  const links = document.querySelectorAll('.mobile-nav__link');
-
-  if (!mobileNav || !toggleBtn) return;
-
-  function openNav() {
-    mobileNav.classList.add('is-open');
-    mobileNav.setAttribute('aria-hidden', 'false');
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeNav() {
-    mobileNav.classList.remove('is-open');
-    mobileNav.setAttribute('aria-hidden', 'true');
-    toggleBtn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  toggleBtn.addEventListener('click', openNav);
-  if (closeBtn) closeBtn.addEventListener('click', closeNav);
-  if (overlay) overlay.addEventListener('click', closeNav);
-
-  links.forEach(link => {
-    link.addEventListener('click', closeNav);
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileNav.classList.contains('is-open')) {
-      closeNav();
-    }
-  });
-})();
-
-/* --------------------------------------------------------------------------
-   5. Interactive Typewriter Role Cycler
-   -------------------------------------------------------------------------- */
-(function initTypewriter() {
-  const el = document.querySelector('.hero-typewriter');
-  if (!el) return;
-
-  const roles = [
-    'Full-Stack Developer',
-    'Vue.js & Frontend Specialist',
-    'PHP / Laravel Engineer',
-    'TypeScript & Web Craftsman',
-    'Scalable System Builder'
-  ];
-
-  let roleIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  const TYPING_SPEED = 65;
-  const DELETE_SPEED = 35;
-  const PAUSE_END = 2000;
-  const PAUSE_START = 350;
-
-  function tick() {
-    const current = roles[roleIndex];
-    if (isDeleting) {
-      charIndex--;
-      el.textContent = current.slice(0, charIndex);
-      if (charIndex === 0) {
-        isDeleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        setTimeout(tick, PAUSE_START);
-        return;
-      }
-      setTimeout(tick, DELETE_SPEED);
-    } else {
-      charIndex++;
-      el.textContent = current.slice(0, charIndex);
-      if (charIndex === current.length) {
-        isDeleting = true;
-        setTimeout(tick, PAUSE_END);
-        return;
-      }
-      setTimeout(tick, TYPING_SPEED);
-    }
-  }
-
-  setTimeout(tick, 500);
-})();
-
-/* --------------------------------------------------------------------------
-   6. Interactive Particle Constellation Canvas
-   -------------------------------------------------------------------------- */
-(function initParticles() {
-  const canvas = document.querySelector('.hero-portal__particles');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  const PARTICLE_COUNT = 48;
-  const CONNECTION_DIST = 110;
-  const SPEED = 0.35;
-  let W, H, particles;
-  let mouse = { x: -1000, y: -1000 };
-
-  function resize() {
-    const portal = canvas.parentElement;
-    if (!portal) return;
-    W = canvas.width = portal.offsetWidth;
-    H = canvas.height = portal.offsetHeight;
-  }
-
-  function makeParticle() {
-    return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * SPEED,
-      vy: (Math.random() - 0.5) * SPEED,
-      r: Math.random() * 1.6 + 0.8,
-    };
-  }
-
-  function init() {
-    resize();
-    particles = Array.from({ length: PARTICLE_COUNT }, makeParticle);
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    // Update positions
-    for (const p of particles) {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0 || p.x > W) p.vx *= -1;
-      if (p.y < 0 || p.y > H) p.vy *= -1;
-    }
-
-    // Constellation lines
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < CONNECTION_DIST) {
-          const alpha = (1 - dist / CONNECTION_DIST) * 0.3;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(6, 182, 212, ${alpha})`;
-          ctx.lineWidth = 0.7;
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Draw particle dots
-    for (const p of particles) {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(99, 102, 241, 0.75)';
-      ctx.fill();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    init();
-    draw();
-    window.addEventListener('resize', () => {
-      resize();
-      particles = Array.from({ length: PARTICLE_COUNT }, makeParticle);
-    }, { passive: true });
-  }
-})();
-
-/* --------------------------------------------------------------------------
-   7. Mouse Spotlight Dynamic Glow on Glass Cards
-   -------------------------------------------------------------------------- */
-(function initSpotlightTracker() {
-  document.addEventListener('mousemove', (e) => {
-    const cards = document.querySelectorAll(
-      '.bento-card--spotlight, .timeline-card, .about__bio-card, .about__highlights-card, .contact__details, .contact__form-wrapper, .work__box'
-    );
-
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty('--mouse-x', `${x}px`);
-      card.style.setProperty('--mouse-y', `${y}px`);
-    });
-  }, { passive: true });
-})();
-
-/* --------------------------------------------------------------------------
-   8. 3D Tilt Parallax on Cyber Portrait & Hero Elements
-   -------------------------------------------------------------------------- */
-(function init3DTilt() {
-  const portrait = document.getElementById('cyber-portrait');
-  if (!portrait || typeof gsap === 'undefined') return;
-
-  const xTo = gsap.quickTo(portrait, 'rotateY', { duration: 0.5, ease: 'power2.out' });
-  const yTo = gsap.quickTo(portrait, 'rotateX', { duration: 0.5, ease: 'power2.out' });
-
-  window.addEventListener('mousemove', (e) => {
-    const { innerWidth, innerHeight } = window;
-    const x = (e.clientX / innerWidth - 0.5) * 16;
-    const y = (e.clientY / innerHeight - 0.5) * -16;
-    xTo(x);
-    yTo(y);
-  }, { passive: true });
-})();
-
-/* --------------------------------------------------------------------------
-   9. Interactive Developer Mini Terminal Widget
-   -------------------------------------------------------------------------- */
-(function initInteractiveTerminal() {
-  const output = document.getElementById('hero-terminal-output');
-  if (!output) return;
-
-  const commands = {
-    whoami: 'Melwin Dave D. Abe — Full-Stack Web Developer with expertise in Vue.js, PHP Laravel & modern cloud systems.',
-    skills: '⚡ Frontend: Vue.js 3, TypeScript, React, Tailwind CSS | 🐘 Backend: PHP, Laravel, Node.js, Express | 🗄️ DB: MySQL, PostgreSQL, MongoDB',
-    experience: '💼 Web Developer @ ES Print Media Inc. (Present 2026) | 🚀 Freelance Full-Stack Developer (2023 - Present)',
-    contact: '📧 abemelwin01@gmail.com | 🌐 github.com/abemelwin | 📍 Philippines',
-    clear: '__CLEAR__',
-    help: 'Available commands: whoami, skills, experience, contact, clear'
+  const sync = () => {
+    const light = document.documentElement.dataset.theme === 'light';
+    btn.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = light ? '#f6f6f8' : '#08080a';
   };
 
-  function executeCmd(cmdName) {
-    const trimmed = cmdName.toLowerCase().trim();
-    if (trimmed === 'clear') {
-      output.innerHTML = `
-        <p class="hero-terminal__line"><span class="t-prompt">$</span> <span class="t-cmd">clear</span></p>
-        <p class="hero-terminal__res">&gt; Terminal reset. Ready for commands.</p>
-      `;
-      return;
-    }
+  btn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('mda-theme', next); } catch (e) {}
+    sync();
+  });
+  sync();
+})();
 
-    const response = commands[trimmed] || `Command not found: "${escapeHtml(trimmed)}". Try: skills, experience, contact`;
+/* --------------------------------------------------------------------------
+   4. Nav: sliding pill, active section, mobile sheet
+   -------------------------------------------------------------------------- */
+(function initNav() {
+  const links = [...document.querySelectorAll('.nav__link')];
+  const pill = document.getElementById('nav-pill');
+  let active = null;
 
-    const line = document.createElement('div');
-    line.style.marginTop = '0.8rem';
-    line.innerHTML = `
-      <p class="hero-terminal__line"><span class="t-prompt">$</span> <span class="t-cmd">${escapeHtml(trimmed)}</span></p>
-      <p class="hero-terminal__res">&gt; ${escapeHtml(response)}</p>
-    `;
+  const movePill = (link) => {
+    if (!pill) return;
+    if (!link) { pill.style.opacity = '0'; return; }
+    pill.style.opacity = '1';
+    pill.style.width = `${link.offsetWidth}px`;
+    pill.style.transform = `translateX(${link.offsetLeft}px)`;
+  };
 
-    output.appendChild(line);
-    output.scrollTop = output.scrollHeight;
+  links.forEach(link => {
+    link.addEventListener('mouseenter', () => movePill(link));
+  });
+  document.querySelector('.nav__links')?.addEventListener('mouseleave', () => movePill(active));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      active = links.find(l => l.getAttribute('href') === `#${entry.target.id}`) || null;
+      links.forEach(l => l.classList.toggle('is-active', l === active));
+      movePill(active);
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+
+  ['work', 'skills', 'experience', 'contact'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+
+  const hero = document.querySelector('.hero');
+  if (hero) {
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        active = null;
+        links.forEach(l => l.classList.remove('is-active'));
+        movePill(null);
+      }
+    }, { rootMargin: '-45% 0px -50% 0px' }).observe(hero);
   }
 
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.t-btn');
-    if (!btn) return;
-    const cmd = btn.dataset.cmd;
-    if (cmd) executeCmd(cmd);
+  // Mobile sheet
+  const toggle = document.getElementById('nav-toggle');
+  const sheet = document.getElementById('sheet');
+  if (!toggle || !sheet) return;
+
+  const setOpen = (open) => {
+    sheet.classList.toggle('is-open', open);
+    sheet.setAttribute('aria-hidden', String(!open));
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (open) sheet.querySelector('a')?.focus({ preventScroll: true });
+  };
+
+  toggle.addEventListener('click', () => setOpen(!sheet.classList.contains('is-open')));
+  sheet.querySelectorAll('a, [data-sheet-close]').forEach(el => el.addEventListener('click', () => setOpen(false)));
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sheet.classList.contains('is-open')) { setOpen(false); toggle.focus(); }
   });
 })();
 
 /* --------------------------------------------------------------------------
-   10a. PRIVATE / MANUAL SHOWCASE PROJECTS
+   5. Spotlight — cursor-following glow on card fills and borders
+   -------------------------------------------------------------------------- */
+(function initSpotlight() {
+  if (!FINE_POINTER) return;
+
+  const track = (container, cards) => {
+    container.addEventListener('mousemove', (e) => {
+      cards().forEach(card => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        card.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    }, { passive: true });
+  };
+
+  document.querySelectorAll('.spotlight-group').forEach(group => {
+    track(group, () => group.querySelectorAll(':scope > .card'));
+  });
+  document.querySelectorAll('.spotlight-solo').forEach(card => track(card, () => [card]));
+})();
+
+/* --------------------------------------------------------------------------
+   6. Reveal on scroll + stat counters
+   -------------------------------------------------------------------------- */
+function countUp(el, target, duration = 1400) {
+  if (REDUCED_MOTION) { el.textContent = target.toLocaleString(); return; }
+  const from = parseInt(el.textContent.replace(/,/g, ''), 10) || 0;
+  const start = performance.now();
+  const frame = (now) => {
+    const p = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.round(from + (target - from) * eased).toLocaleString();
+    if (p < 1) requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}
+
+(function initReveals() {
+  const els = document.querySelectorAll('.reveal');
+
+  if (REDUCED_MOTION) {
+    els.forEach(el => el.classList.add('is-in'));
+    document.querySelectorAll('.count').forEach(el => countUp(el, parseInt(el.dataset.target, 10) || 0));
+    return;
+  }
+
+  let batch = 0;
+  let batchTimer = null;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+
+      // Stagger elements that enter in the same frame
+      el.style.setProperty('--d', `${Math.min(batch, 8) * 0.07}s`);
+      batch++;
+      clearTimeout(batchTimer);
+      batchTimer = setTimeout(() => { batch = 0; }, 60);
+
+      el.classList.add('is-in');
+      el.querySelectorAll('.count').forEach(c => {
+        setTimeout(() => countUp(c, parseInt(c.dataset.target, 10) || 0), 300);
+        c.dataset.counted = '1';
+      });
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+  els.forEach(el => observer.observe(el));
+})();
+
+/* --------------------------------------------------------------------------
+   7. Hero: rotating role, photo tilt, local clock
+   -------------------------------------------------------------------------- */
+(function initRotator() {
+  const el = document.getElementById('rotator');
+  if (!el || REDUCED_MOTION) return;
+
+  const roles = ['Full-Stack Developer', 'Vue.js Specialist', 'Laravel Engineer', 'TypeScript Developer', 'Internal-Tools Builder'];
+  let i = 0;
+
+  setInterval(() => {
+    el.classList.add('is-out');
+    setTimeout(() => {
+      i = (i + 1) % roles.length;
+      el.textContent = roles[i];
+      el.classList.remove('is-out');
+    }, 350);
+  }, 2800);
+})();
+
+(function initTilt() {
+  if (!FINE_POINTER || REDUCED_MOTION) return;
+
+  document.querySelectorAll('.tilt').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${y * -8}deg)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+})();
+
+(function initClock() {
+  const el = document.getElementById('ph-clock');
+  if (!el) return;
+  const fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+  const tick = () => { el.textContent = fmt.format(new Date()); };
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* --------------------------------------------------------------------------
+   8. Magnetic Buttons
+   -------------------------------------------------------------------------- */
+(function initMagnetic() {
+  if (!FINE_POINTER || REDUCED_MOTION) return;
+
+  document.querySelectorAll('.magnetic').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.25;
+      const y = (e.clientY - r.top - r.height / 2) * 0.35;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  });
+})();
+
+/* --------------------------------------------------------------------------
+   9. GitHub Contribution Graph (last 12 months)
+   -------------------------------------------------------------------------- */
+(async function initContributions() {
+  const grid = document.getElementById('contrib-grid');
+  const total = document.getElementById('contrib-total');
+  if (!grid) return;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${GITHUB_USER}?y=last`, { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    const days = data.contributions || [];
+    if (!days.length) throw new Error('No contribution data');
+
+    // Pad the first week so rows line up with weekdays (Sun = row 0)
+    const offset = new Date(days[0].date).getDay();
+    const cells = [];
+    for (let i = 0; i < offset; i++) cells.push('<i style="visibility:hidden;--w:0"></i>');
+    days.forEach((d, idx) => {
+      const week = Math.floor((idx + offset) / 7);
+      cells.push(`<i data-l="${d.level}" style="--w:${week}" title="${d.count} contribution${d.count === 1 ? '' : 's'} · ${d.date}"></i>`);
+    });
+
+    const render = () => { grid.innerHTML = cells.join(''); };
+
+    // Animate in when the card scrolls into view
+    new IntersectionObserver(([entry], obs) => {
+      if (entry.isIntersecting) { render(); obs.disconnect(); }
+    }, { threshold: 0.2 }).observe(grid);
+
+    const sum = data.total ? Object.values(data.total).reduce((a, b) => a + b, 0) : days.reduce((a, d) => a + d.count, 0);
+    if (total) total.innerHTML = `<strong style="color:var(--fg)">${sum.toLocaleString()}</strong> contributions in the last year`;
+  } catch (err) {
+    console.warn('Contribution graph unavailable:', err);
+    grid.parentElement.innerHTML = `<a class="contrib__fallback link-arrow" href="https://github.com/${GITHUB_USER}" target="_blank" rel="noopener noreferrer">View my activity on GitHub ↗</a>`;
+    if (total) total.textContent = 'Live activity from github.com/' + GITHUB_USER;
+  }
+})();
+
+/* --------------------------------------------------------------------------
+   10. Featured dashboard — animate charts & KPIs when visible
+   -------------------------------------------------------------------------- */
+(function initDashboard() {
+  const dash = document.getElementById('dash');
+  if (!dash) return;
+
+  new IntersectionObserver(([entry], obs) => {
+    if (!entry.isIntersecting) return;
+    dash.classList.add('is-live');
+    dash.querySelectorAll('[data-to]').forEach(el => countUp(el, parseInt(el.dataset.to, 10), 1800));
+    obs.disconnect();
+  }, { threshold: 0.35 }).observe(dash);
+})();
+
+/* --------------------------------------------------------------------------
+   11. Timeline progress line
+   -------------------------------------------------------------------------- */
+(function initTimeline() {
+  const timeline = document.getElementById('timeline');
+  const fill = document.getElementById('timeline-fill');
+  if (!timeline || !fill) return;
+
+  if (REDUCED_MOTION) { fill.style.transform = 'scaleY(1)'; return; }
+
+  let ticking = false;
+  const update = () => {
+    const r = timeline.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (window.innerHeight * 0.6 - r.top) / r.height));
+    fill.style.transform = `scaleY(${p})`;
+    ticking = false;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  update();
+})();
+
+/* --------------------------------------------------------------------------
+   12a. PRIVATE / MANUAL SHOWCASE PROJECTS
    -------------------------------------------------------------------------- */
 /*
    Keep `private: true` for projects that should require approval/access before
@@ -370,6 +382,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
     forks_count: 0,
     html_url: 'https://github.com/abemelwin/esprint-portal',
     private: true,
+    featured: true,
     updated_at: '2026-09-10'
   },
   {
@@ -430,7 +443,7 @@ const PRIVATE_SHOWCASE_PROJECTS = [
 ];
 
 /* --------------------------------------------------------------------------
-   10b. Curated Fallback Projects (When GitHub offline or rate limited)
+   12b. Curated Fallback Projects (When GitHub offline or rate limited)
    -------------------------------------------------------------------------- */
 const FALLBACK_PROJECTS = [
   {
@@ -480,31 +493,43 @@ const FALLBACK_PROJECTS = [
 ];
 
 /* --------------------------------------------------------------------------
-   11. GitHub Projects Auto-Fetch & Dynamic Filter Engine
+   13. Project Grid — GitHub fetch, filters, search, show more
    -------------------------------------------------------------------------- */
-let allProjectsData = [];
+const LANG_COLORS = {
+  typescript: '#3178c6',
+  javascript: '#d4b830',
+  vue: '#41b883',
+  'vue.js': '#41b883',
+  php: '#7a86b8',
+  html: '#e34c26',
+  css: '#663399',
+  'c#': '#178600',
+  python: '#3572a5',
+  go: '#00add8'
+};
+
+const PAGE_SIZE = 9;
 
 (async function initProjectsEngine() {
-  const workSection = document.querySelector('.work[data-github-username]');
+  const workSection = document.querySelector('#work[data-github-username]');
   if (!workSection) return;
 
-  const username = workSection.dataset.githubUsername || 'abemelwin';
-  const container = document.getElementById('github-projects');
+  const username = workSection.dataset.githubUsername || GITHUB_USER;
+  const grid = document.getElementById('github-projects');
   const loadingEl = document.getElementById('github-loading');
   const countEl = document.getElementById('project-count');
   const searchInput = document.getElementById('project-search-input');
-  const filterBtns = document.querySelectorAll('.filter-btn');
+  const filterBtns = [...document.querySelectorAll('.filter-btn')];
+  const thumb = document.getElementById('filter-thumb');
+  const moreBtn = document.getElementById('show-more');
+  const statProjects = document.getElementById('stat-projects');
 
   let activeFilter = 'all';
   let activeSearchQuery = '';
+  let expanded = false;
 
-  const SKIP_REPOS = new Set([
-    username.toLowerCase(),
-    '.github',
-    'portfolio'
-  ]);
+  const SKIP_REPOS = new Set([username.toLowerCase(), '.github', 'portfolio']);
 
-  // Fetch repos from GitHub
   let repos = [];
   try {
     const controller = new AbortController();
@@ -518,372 +543,158 @@ let allProjectsData = [];
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        repos = data.filter(r => !SKIP_REPOS.has(r.name.toLowerCase()));
+        repos = data.filter(r => !SKIP_REPOS.has(r.name.toLowerCase()) && !r.fork);
       }
     }
   } catch (err) {
     console.warn('GitHub fetch failed, using curated portfolio projects:', err);
   }
 
-  // Hide skeleton
   if (loadingEl) loadingEl.classList.add('github-loading--hidden');
 
-  // Fallback if no public repos or API limit reached
-  if (repos.length === 0) {
-    repos = FALLBACK_PROJECTS;
-  }
+  if (repos.length === 0) repos = FALLBACK_PROJECTS;
 
   // Palaging isama ang mga private/manual showcase projects (hindi galing sa
   // GitHub API dahil hindi talaga makikita ng public request ang private repos)
-  repos = [...PRIVATE_SHOWCASE_PROJECTS, ...repos];
+  const allProjects = [...PRIVATE_SHOWCASE_PROJECTS, ...repos];
 
-  allProjectsData = repos;
+  // Hero stat reflects the real total
+  if (statProjects) {
+    statProjects.dataset.target = String(allProjects.length);
+    if (statProjects.dataset.counted) countUp(statProjects, allProjects.length);
+  }
 
-  // Determine category helper
+  // The featured project already has its own showcase card above the grid
+  const gridProjects = allProjects.filter(p => !p.featured);
+
   function getCategory(repo) {
     const topics = (repo.topics || []).map(t => t.toLowerCase());
     const lang = (repo.language || '').toLowerCase();
 
-    if (topics.some(t => ['android', 'ios', 'mobile', 'react-native', 'flutter'].includes(t))) return 'mobile';
+    if (topics.some(t => ['android', 'ios', 'mobile', 'react-native', 'flutter', 'electron', 'desktop-app'].includes(t))) return 'mobile';
     if (topics.some(t => ['fullstack', 'full-stack', 'laravel', 'erp', 'supabase', 'hr-management', 'check-monitoring', 'sales-portal', 'internal-tool'].includes(t)) || (lang === 'php' && topics.includes('vue'))) return 'fullstack';
-    if (['vue', 'typescript', 'javascript', 'react', 'html', 'css'].includes(lang) && !topics.includes('backend')) return 'frontend';
-    if (['php', 'python', 'go', 'node', 'express'].includes(lang) || topics.some(t => ['api', 'backend', 'rest-api'].includes(t))) return 'backend';
+    if (['vue', 'vue.js', 'typescript', 'javascript', 'react', 'html', 'css'].includes(lang) && !topics.includes('backend')) return 'frontend';
+    if (['php', 'python', 'go', 'node', 'express', 'c#'].includes(lang) || topics.some(t => ['api', 'backend', 'rest-api'].includes(t))) return 'backend';
     return 'fullstack';
   }
 
-  // Render cards
-  function renderProjects() {
-    if (!container) return;
-    container.innerHTML = '';
+  gridProjects.forEach(p => {
+    p._category = getCategory(p);
+    p._title = p.name.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/\b\w/g, l => l.toUpperCase());
+    if (p._title.length <= 4) p._title = p._title.toUpperCase();
+    p._mono = p._title.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    p._color = LANG_COLORS[(p.language || '').toLowerCase()] || '#7c9cff';
+    p._year = p.updated_at ? new Date(p.updated_at).getFullYear() : '';
+  });
 
-    const filtered = allProjectsData.filter(repo => {
-      const cat = getCategory(repo);
-      const matchesFilter = (activeFilter === 'all') || (cat === activeFilter);
+  // Category counts on filter buttons
+  filterBtns.forEach(btn => {
+    const f = btn.dataset.filter;
+    const n = f === 'all' ? gridProjects.length : gridProjects.filter(p => p._category === f).length;
+    btn.insertAdjacentHTML('beforeend', `<sup>${n}</sup>`);
+  });
 
-      const name = (repo.name || '').toLowerCase();
-      const desc = (repo.description || '').toLowerCase();
-      const lang = (repo.language || '').toLowerCase();
-      const topics = (repo.topics || []).join(' ').toLowerCase();
+  const moveThumb = () => {
+    const btn = filterBtns.find(b => b.classList.contains('active'));
+    if (!thumb || !btn) return;
+    thumb.style.width = `${btn.offsetWidth}px`;
+    thumb.style.transform = `translate(${btn.offsetLeft}px, ${btn.offsetTop - 4}px)`;
+  };
+  moveThumb();
+  window.addEventListener('resize', moveThumb, { passive: true });
+  document.fonts?.ready.then(moveThumb);
 
-      const q = activeSearchQuery.toLowerCase().trim();
-      const matchesSearch = !q || name.includes(q) || desc.includes(q) || lang.includes(q) || topics.includes(q);
-
-      return matchesFilter && matchesSearch;
-    });
-
-    if (countEl) {
-      countEl.textContent = `${filtered.length} project${filtered.length !== 1 ? 's' : ''} shown.`;
-    }
-
-    if (filtered.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center; padding: 4rem; background: var(--bg-glass-card); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);">
-          <p style="font-size: 1.8rem; color: #ffffff; margin-bottom: 0.8rem;">No projects matched your criteria.</p>
-          <p style="color: var(--text-muted);">Try clearing the search query or selecting a different filter category.</p>
-        </div>
-      `;
-      return;
-    }
-
-    filtered.forEach((repo, index) => {
-      const isReverse = index % 2 !== 0;
-      const isPrivate = Boolean(repo.private);
-
-      const card = document.createElement('div');
-      card.className = `work__box${isReverse ? ' work__box--reverse' : ''} fade-in visible`;
-      card.dataset.repo = repo.name;
-
-      const formattedName = repo.name
-        .replace(/-/g, ' ')
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-
-      const tagLabel = isPrivate ? 'Private System' : (repo.language || 'Full-Stack Project');
-
-      const topicsHtml = (repo.topics && repo.topics.length > 0)
-        ? repo.topics.map(t => `<li>${escapeHtml(t)}</li>`).join('')
-        : (repo.language ? `<li>${escapeHtml(repo.language)}</li>` : '<li>Web Application</li>');
-
-      const stars = repo.stargazers_count > 0
-        ? `<span class="github-projects__meta-item">
-             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-             ${repo.stargazers_count}
-           </span>` : '';
-
-      const forks = repo.forks_count > 0
-        ? `<span class="github-projects__meta-item">
-             <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-               <circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/>
-               <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/><path d="M12 12v3"/>
-             </svg>
-             ${repo.forks_count}
-           </span>` : '';
-
-      const updatedDate = repo.updated_at
-        ? new Date(repo.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })
-        : 'Recent';
-
-      const description = repo.description || 'Production-grade software application engineered with clean code and high performance standards.';
-
-      const linksHtml = isPrivate
-        ? `<button type="button" class="btn btn--outline request-access-btn" data-project="${escapeHtml(formattedName)}">Connect for Access</button>`
-        : `<a href="${escapeHtml(repo.html_url || 'https://github.com/abemelwin')}" target="_blank" rel="noopener noreferrer" class="link__text">
-             <span>View on GitHub</span>
-             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-           </a>`;
-
-      card.innerHTML = `
-        <div class="work__text">
-          <span class="work__tag">${escapeHtml(tagLabel)}</span>
-          <h3>${escapeHtml(formattedName)}</h3>
-          <p class="work__desc">${escapeHtml(description)}</p>
-          <ul class="work__list">
-            ${topicsHtml}
-          </ul>
-          <div class="github-projects__meta">
-            ${stars}
-            ${forks}
-            <span class="github-projects__meta-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              ${updatedDate}
-            </span>
-          </div>
-          <div class="work__links">
-            ${linksHtml}
-          </div>
-        </div>
-        <div class="work__image-box">
-          <div class="mockup-browser">
-            <div class="mockup-browser__bar">
-              <span class="mockup-browser__dot mockup-browser__dot--red"></span>
-              <span class="mockup-browser__dot mockup-browser__dot--yellow"></span>
-              <span class="mockup-browser__dot mockup-browser__dot--green"></span>
-              <div class="mockup-browser__url">https://github.com/abemelwin/${escapeHtml(repo.name || 'project')}</div>
-            </div>
-            <div class="mockup-browser__screen">
-              <div class="mockup-github-card">
-                <div class="mockup-github-card__icon">${isPrivate ? '🔒' : '⚡'}</div>
-                <div class="mockup-github-card__name">${escapeHtml(formattedName)}</div>
-                <div class="mockup-github-card__desc">${escapeHtml(description)}</div>
-                <div class="mockup-github-card__stats">
-                  <span>${escapeHtml(repo.language || 'Full-Stack')}</span>
-                  <span>★ ${repo.stargazers_count || 0}</span>
-                  <span>⑂ ${repo.forks_count || 0}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      container.appendChild(card);
-    });
-
-    // Re-inject preview terminal overlays into rendered cards
-    injectCodePreviews();
+  function matches(repo) {
+    if (activeFilter !== 'all' && repo._category !== activeFilter) return false;
+    const q = activeSearchQuery.toLowerCase().trim();
+    if (!q) return true;
+    return [repo.name, repo.description, repo.language, (repo.topics || []).join(' ')]
+      .some(v => (v || '').toLowerCase().includes(q));
   }
 
-  // Filter Buttons event listeners
+  function cardHtml(repo, i) {
+    const isPrivate = Boolean(repo.private);
+    const topics = (repo.topics || []).slice(0, 3);
+    const extra = (repo.topics || []).length - topics.length;
+    const tagsHtml = topics.map(t => `<li>${escapeHtml(t)}</li>`).join('') + (extra > 0 ? `<li>+${extra}</li>` : '');
+
+    const action = isPrivate
+      ? `<button type="button" class="project__action project__link request-access-btn" data-project="${escapeHtml(repo._title)}" aria-label="Request access to ${escapeHtml(repo._title)}">Request access <span aria-hidden="true">→</span></button>`
+      : `<a class="project__action project__link" href="${escapeHtml(repo.html_url || `https://github.com/${username}`)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(repo._title)} on GitHub">GitHub <span aria-hidden="true">↗</span></a>`;
+
+    return `
+      <article class="card project" style="--i:${i};--lang:${repo._color}">
+        <div class="project__top">
+          <span class="project__icon">${escapeHtml(repo._mono)}</span>
+          ${isPrivate ? '<span class="badge">🔒 Private</span>' : (repo._year ? `<span class="badge">${repo._year}</span>` : '')}
+        </div>
+        <h3 class="project__title">${escapeHtml(repo._title)}</h3>
+        <p class="project__desc">${escapeHtml(repo.description || 'Production-grade web application built with clean, maintainable code.')}</p>
+        ${tagsHtml ? `<ul class="project__tags">${tagsHtml}</ul>` : ''}
+        <div class="project__foot">
+          <span class="project__lang"><i></i>${escapeHtml(repo.language || 'Web')}</span>
+          ${action}
+        </div>
+      </article>
+    `;
+  }
+
+  function render() {
+    if (!grid) return;
+    const filtered = gridProjects.filter(matches);
+    const visible = expanded ? filtered : filtered.slice(0, PAGE_SIZE);
+
+    grid.innerHTML = filtered.length
+      ? visible.map(cardHtml).join('')
+      : `<div class="projects-empty"><strong>No projects found</strong>Try another keyword or filter.</div>`;
+
+    if (countEl) countEl.textContent = `Showing ${visible.length} of ${filtered.length}`;
+
+    if (moreBtn) {
+      const hidden = filtered.length - visible.length;
+      moreBtn.hidden = hidden <= 0;
+      moreBtn.textContent = `Show ${hidden} more`;
+    }
+  }
+
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
+      filterBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
       activeFilter = btn.dataset.filter || 'all';
-      renderProjects();
+      expanded = false;
+      moveThumb();
+      render();
     });
   });
 
-  // Search input listener with debounce
   if (searchInput) {
-    let searchDebounce;
+    let debounce;
     searchInput.addEventListener('input', (e) => {
-      clearTimeout(searchDebounce);
-      searchDebounce = setTimeout(() => {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => {
         activeSearchQuery = e.target.value;
-        renderProjects();
-      }, 180);
+        expanded = Boolean(activeSearchQuery.trim());
+        render();
+      }, 160);
+    });
+
+    // "/" focuses search, like GitHub
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.target.closest('input, textarea')) return;
+      e.preventDefault();
+      searchInput.focus();
     });
   }
 
-  // Initial render
-  renderProjects();
+  if (moreBtn) moreBtn.addEventListener('click', () => { expanded = true; render(); });
+
+  render();
 })();
 
 /* --------------------------------------------------------------------------
-   12. Animated Code Preview Terminal Overlay in Mockups
-   -------------------------------------------------------------------------- */
-const CODE_SNIPPETS = {
-  JavaScript: [
-    { prompt: '$', command: 'npm run dev' },
-    { comment: '// Starting Vite development server...' },
-    { code: '<span class="mockup-preview__keyword">const</span> <span class="mockup-preview__variable">app</span> <span class="mockup-preview__operator">=</span> <span class="mockup-preview__function">createApp</span>(App)' },
-    { code: '<span class="mockup-preview__variable">app</span>.<span class="mockup-preview__function">use</span>(<span class="mockup-preview__variable">router</span>).<span class="mockup-preview__function">mount</span>(<span class="mockup-preview__string">\'#app\'</span>)' },
-    { comment: '// ✓ Ready in 240ms. Network: http://localhost:5173/' }
-  ],
-  TypeScript: [
-    { prompt: '$', command: 'npx tsc --watch' },
-    { comment: '// Typechecking production build...' },
-    { code: '<span class="mockup-preview__keyword">export interface</span> <span class="mockup-preview__function">UserSession</span> {' },
-    { code: '  <span class="mockup-preview__variable">id</span>: <span class="mockup-preview__string">string</span>; <span class="mockup-preview__variable">role</span>: <span class="mockup-preview__string">\'admin\' | \'developer\'</span>;' },
-    { code: '}' },
-    { comment: '// ✓ Found 0 errors. Watching for changes.' }
-  ],
-  Vue: [
-    { prompt: '$', command: 'npm run serve' },
-    { comment: '// Hot Module Replacement initialized' },
-    { code: '&lt;<span class="mockup-preview__keyword">template</span>&gt;' },
-    { code: '  &lt;<span class="mockup-preview__function">DashboardView</span> :<span class="mockup-preview__variable">data</span>=<span class="mockup-preview__string">"analytics"</span> /&gt;' },
-    { code: '&lt;/<span class="mockup-preview__keyword">template</span>&gt;' }
-  ],
-  PHP: [
-    { prompt: '$', command: 'php artisan serve' },
-    { comment: '// Laravel backend server active' },
-    { code: '<span class="mockup-preview__keyword">class</span> <span class="mockup-preview__function">OrderController</span> <span class="mockup-preview__keyword">extends</span> <span class="mockup-preview__variable">Controller</span> {' },
-    { code: '  <span class="mockup-preview__keyword">public function</span> <span class="mockup-preview__function">index</span>() { <span class="mockup-preview__keyword">return</span> <span class="mockup-preview__function">response</span>()-&gt;<span class="mockup-preview__function">json</span>(<span class="mockup-preview__variable">$orders</span>); }' },
-    { code: '}' }
-  ],
-  default: [
-    { prompt: '$', command: 'git status && npm run build' },
-    { comment: '// Optimizing static assets...' },
-    { code: '<span class="mockup-preview__keyword">import</span> { <span class="mockup-preview__variable">createRouter</span> } <span class="mockup-preview__keyword">from</span> <span class="mockup-preview__string">\'vue-router\'</span>' },
-    { code: '<span class="mockup-preview__keyword">export const</span> <span class="mockup-preview__variable">app</span> <span class="mockup-preview__operator">=</span> <span class="mockup-preview__function">initApp</span>()' },
-    { comment: '// ✓ Build succeeded in 1.4s' }
-  ]
-};
-
-function injectCodePreviews() {
-  const cards = document.querySelectorAll('.work__box');
-  cards.forEach(card => {
-    if (card.dataset.previewInjected) return;
-    card.dataset.previewInjected = 'true';
-
-    const screen = card.querySelector('.mockup-browser__screen');
-    if (!screen) return;
-
-    let language = 'default';
-    const tagEl = card.querySelector('.work__tag');
-    if (tagEl) {
-      const text = tagEl.textContent.trim().toLowerCase();
-      if (text.includes('vue')) language = 'Vue';
-      else if (text.includes('php') || text.includes('laravel')) language = 'PHP';
-      else if (text.includes('typescript')) language = 'TypeScript';
-      else if (text.includes('javascript')) language = 'JavaScript';
-    }
-
-    const snippet = CODE_SNIPPETS[language] || CODE_SNIPPETS.default;
-
-    let lines = '';
-    snippet.forEach(item => {
-      if (item.prompt) {
-        lines += `<div class="mockup-preview__line"><span class="mockup-preview__prompt">${item.prompt}</span> <span class="mockup-preview__command">${item.command}</span></div>`;
-      } else if (item.comment) {
-        lines += `<div class="mockup-preview__line"><span class="mockup-preview__comment">${item.comment}</span></div>`;
-      } else if (item.code) {
-        lines += `<div class="mockup-preview__line">${item.code}</div>`;
-      }
-    });
-
-    lines += `<div class="mockup-preview__line"><span class="mockup-preview__cursor"></span></div>`;
-
-    const previewEl = document.createElement('div');
-    previewEl.className = 'mockup-preview';
-    previewEl.innerHTML = `
-      <div class="mockup-preview__play-indicator">
-        <span class="mockup-preview__play-dot"></span>
-        <span>LIVE DEV</span>
-      </div>
-      <div class="mockup-preview__terminal">
-        ${lines}
-      </div>
-      <div class="mockup-preview__activity">
-        <div class="mockup-preview__activity-bar">
-          <div class="mockup-preview__activity-fill"></div>
-        </div>
-        <span class="mockup-preview__activity-label">compiling...</span>
-      </div>
-    `;
-
-    screen.appendChild(previewEl);
-  });
-}
-
-/* --------------------------------------------------------------------------
-   13. IntersectionObserver for Active Nav & Fade In Animations
-   -------------------------------------------------------------------------- */
-(function initScrollObservers() {
-  // 1. Fade-in Observer
-  const fadeElements = document.querySelectorAll('.fade-in');
-  const fadeObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 80);
-        fadeObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-
-  fadeElements.forEach(el => fadeObserver.observe(el));
-
-  // 2. Active Nav Link Observer
-  const sections = ['work', 'skills', 'experience', 'about', 'contact'];
-  const links = {};
-  sections.forEach(id => {
-    links[id] = document.querySelector(`.nav__link[href="#${id}"]`);
-  });
-
-  const navObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const id = entry.target.id;
-      if (links[id]) {
-        links[id].classList.toggle('nav__link--active', entry.isIntersecting);
-      }
-    });
-  }, { rootMargin: '-35% 0px -55% 0px' });
-
-  sections.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) navObserver.observe(el);
-  });
-})();
-
-/* --------------------------------------------------------------------------
-   14. Animated Stat Counters
-   -------------------------------------------------------------------------- */
-(function initStatCounters() {
-  function animateCounter(el) {
-    const target = parseInt(el.dataset.target, 10);
-    if (isNaN(target)) return;
-    const duration = 1400;
-    const step = target / (duration / 16);
-    let current = 0;
-
-    const tick = () => {
-      current += step;
-      if (current >= target) {
-        el.textContent = `${target}+`;
-      } else {
-        el.textContent = `${Math.floor(current)}+`;
-        requestAnimationFrame(tick);
-      }
-    };
-    requestAnimationFrame(tick);
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll('.hero-stat-num[data-target]').forEach(animateCounter);
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-
-  const statsEl = document.querySelector('.hero-stats');
-  if (statsEl) observer.observe(statsEl);
-})();
-
-/* --------------------------------------------------------------------------
-   15. Contact Form Handler
+   14. Contact Form Handler
    -------------------------------------------------------------------------- */
 function buildMailtoLink(name, email, subjectVal, message) {
   const body = `Hi Melwin,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
@@ -933,12 +744,12 @@ async function handleContactForm(e) {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      showToast('Message sent successfully! ✉️');
+      showToast('Message sent successfully!');
       form.reset();
       return;
     }
 
-    showToast('Opening your email client... ✉️');
+    showToast('Opening your email client…');
     const mailtoLink = buildMailtoLink(name, email, subjectVal, message);
 
     setTimeout(() => {
@@ -951,7 +762,7 @@ async function handleContactForm(e) {
     }, 400);
   } catch (error) {
     console.error('Contact form send failed:', error);
-    showToast('Your email app will open so you can send the message manually.');
+    showToast('Your email app will open so you can send it manually.');
 
     const fallbackLink = buildMailtoLink(name, email, subjectVal, message);
     setTimeout(() => {
@@ -971,28 +782,33 @@ async function handleContactForm(e) {
 }
 
 /* --------------------------------------------------------------------------
-   16. Request Access Modal (For private repos)
+   15. Request Access Modal (For private repos)
    -------------------------------------------------------------------------- */
 (function initRequestAccessModal() {
   const raModal = document.getElementById('request-access-modal');
   const raForm = document.getElementById('request-access-form');
   const raProjectInput = document.getElementById('request-project');
   const raStatus = document.getElementById('ra-status');
+  const raTitle = document.getElementById('request-access-title');
+  let lastFocused = null;
 
   function openModal(project) {
     if (!raModal) return;
+    lastFocused = document.activeElement;
     if (raProjectInput) raProjectInput.value = project || '';
+    if (raTitle) raTitle.textContent = project ? `Request access to ${project}` : 'Request access';
     if (raStatus) raStatus.textContent = '';
     raModal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     const nameInput = document.getElementById('ra-name');
-    if (nameInput) nameInput.focus();
+    if (nameInput) setTimeout(() => nameInput.focus(), 250);
   }
 
   function closeModal() {
     if (!raModal) return;
     raModal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (lastFocused && lastFocused.focus) lastFocused.focus({ preventScroll: true });
   }
 
   document.addEventListener('click', (e) => {
@@ -1034,8 +850,8 @@ async function handleContactForm(e) {
           body: formData
         });
         if (res.ok) {
-          if (raStatus) raStatus.textContent = '✓ Request sent successfully! I will reply by email.';
-          showToast('Access request submitted! 🚀');
+          if (raStatus) raStatus.textContent = '✓ Request sent — I will reply by email.';
+          showToast('Access request submitted!');
           raForm.reset();
           setTimeout(() => closeModal(), 1800);
         } else {
@@ -1047,7 +863,7 @@ async function handleContactForm(e) {
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Send Request';
+          submitBtn.textContent = 'Send request';
         }
       }
     });
@@ -1055,270 +871,19 @@ async function handleContactForm(e) {
 })();
 
 /* --------------------------------------------------------------------------
-   17. Keyboard Accessibility Tab Detection & Footer Year
+   16. Footer Year & Console Signature
    -------------------------------------------------------------------------- */
-window.addEventListener('keydown', function handleFirstTab(e) {
-  if (e.key === 'Tab') {
-    document.body.classList.add('user-is-tabbing');
-    window.removeEventListener('keydown', handleFirstTab);
-  }
-});
-
-/* --------------------------------------------------------------------------
-   God-Tier Developer Cyber Terminal & Interactive Neural HUD Preloader
-   -------------------------------------------------------------------------- */
-(function initGodTierCyberPreloader() {
-  const loader = document.getElementById('page-loader');
-  if (!loader) return;
-
-  const canvas = document.getElementById('dev-loader-canvas');
-  const skipBtn = document.getElementById('dev-loader-skip');
-  const cmdEl = document.getElementById('dev-loader-cmd');
-  const logsEl = document.getElementById('dev-loader-logs');
-  const counterEl = document.getElementById('dev-loader-counter');
-  const fillEl = document.getElementById('dev-loader-progress-fill');
-  const statusEl = document.getElementById('dev-loader-status-text');
-
-  let isBreached = false;
-  let canvasAnimId = null;
-
-  /* --- 1. Interactive Neural Particle Canvas --- */
-  if (canvas && canvas.getContext) {
-    const ctx = canvas.getContext('2d');
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    window.addEventListener('resize', () => {
-      if (isBreached) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const particles = [];
-    const count = Math.min(38, Math.floor((width * height) / 28000));
-    const colors = ['rgba(56, 189, 248, 0.7)', 'rgba(99, 102, 241, 0.65)', 'rgba(168, 85, 247, 0.6)'];
-
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.7,
-        vy: (Math.random() - 0.5) * 0.7,
-        radius: Math.random() * 1.8 + 1,
-        color: colors[Math.floor(Math.random() * colors.length)]
-      });
-    }
-
-    let mouseX = width / 2;
-    let mouseY = height / 2;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    function drawNeuralNetwork() {
-      if (isBreached) return;
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw connecting lines
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < 110) {
-            const alpha = (1 - dist / 110) * 0.22;
-            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-            ctx.lineWidth = 0.8;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw particles
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        // Subtle mouse interaction
-        const mdx = p.x - mouseX;
-        const mdy = p.y - mouseY;
-        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mDist < 120) {
-          p.x += (mdx / mDist) * 0.8;
-          p.y += (mdy / mDist) * 0.8;
-        }
-
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      canvasAnimId = requestAnimationFrame(drawNeuralNetwork);
-    }
-
-    drawNeuralNetwork();
-  }
-
-  /* --- 2. Live Command Typing --- */
-  const fullCmd = 'init --developer "Melwin Dave D. Abe" --mode=production';
-  let charIndex = 0;
-  const typeTimer = setInterval(() => {
-    if (isBreached) {
-      clearInterval(typeTimer);
-      return;
-    }
-    if (charIndex < fullCmd.length) {
-      if (cmdEl) cmdEl.textContent += fullCmd[charIndex];
-      charIndex++;
-    } else {
-      clearInterval(typeTimer);
-    }
-  }, 15);
-
-  /* --- 3. Structured Compilation Logs --- */
-  const logMilestones = [
-    {
-      delay: 650,
-      progress: 25,
-      status: 'INITIALIZING_CORE_PIPELINES...',
-      html: '<div class="log-item log-item--ok"><span>✔ [01/04]</span> <span>⚡ Initializing Next.js 15, React 19 &amp; TypeScript core...</span></div>'
-    },
-    {
-      delay: 1300,
-      progress: 55,
-      status: 'CONNECTING_AWS_INFRASTRUCTURE...',
-      html: '<div class="log-item log-item--aws"><span>✔ [02/04]</span> <span>☁️ Connecting AWS Cloud (EC2, S3, RDS, CloudFront)...</span></div>'
-    },
-    {
-      delay: 1950,
-      progress: 85,
-      status: 'MOUNTING_BACKEND_SYSTEMS...',
-      html: '<div class="log-item log-item--engine"><span>✔ [03/04]</span> <span>🛠️ Mounting Node.js, Laravel, PostgreSQL &amp; Supabase...</span></div>'
-    },
-    {
-      delay: 2550,
-      progress: 100,
-      status: 'ACCESS_GRANTED // EXECUTING_PORTFOLIO',
-      html: '<div class="log-item log-item--success"><span>✔ [04/04]</span> <span>🚀 Build completed successfully. ACCESS GRANTED.</span></div>'
-    }
-  ];
-
-  const logTimeouts = [];
-  logMilestones.forEach((item) => {
-    const t = setTimeout(() => {
-      if (isBreached) return;
-      if (logsEl) logsEl.insertAdjacentHTML('beforeend', item.html);
-      if (statusEl) statusEl.textContent = item.status;
-    }, item.delay);
-    logTimeouts.push(t);
-  });
-
-  /* --- 4. Smooth Telemetry Counter --- */
-  const totalDuration = 2700;
-  const startTime = performance.now();
-
-  function updateTelemetry(now) {
-    if (isBreached) return;
-    const elapsed = now - startTime;
-    const progress = Math.min(1, elapsed / totalDuration);
-
-    const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-    const currentPercent = Math.floor(ease * 100);
-
-    if (counterEl) counterEl.textContent = String(currentPercent).padStart(3, '0') + '%';
-    if (fillEl) fillEl.style.width = currentPercent + '%';
-
-    if (progress < 1) {
-      requestAnimationFrame(updateTelemetry);
-    } else {
-      if (counterEl) counterEl.textContent = '100%';
-      if (fillEl) fillEl.style.width = '100%';
-      if (statusEl) statusEl.textContent = 'ACCESS GRANTED // LAUNCHING INTERFACE';
-      setTimeout(triggerShutterBreach, 400);
-    }
-  }
-
-  requestAnimationFrame(updateTelemetry);
-
-  /* --- 5. Interactive Skip Feature (Space / Button / Click) --- */
-  function instantSkip() {
-    if (isBreached) return;
-    logTimeouts.forEach((t) => clearTimeout(t));
-    if (cmdEl) cmdEl.textContent = fullCmd;
-
-    if (logsEl && logsEl.children.length < logMilestones.length) {
-      logsEl.innerHTML = '';
-      logMilestones.forEach((m) => logsEl.insertAdjacentHTML('beforeend', m.html));
-    }
-
-    if (counterEl) counterEl.textContent = '100%';
-    if (fillEl) fillEl.style.width = '100%';
-    if (statusEl) statusEl.textContent = 'ACCESS GRANTED // BYPASSING_TELEMETRY';
-
-    triggerShutterBreach();
-  }
-
-  if (skipBtn) {
-    skipBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      instantSkip();
-    });
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if (isBreached) return;
-    if (e.code === 'Space' || e.key === 'Enter') {
-      e.preventDefault();
-      instantSkip();
-    }
-  });
-
-  /* --- 6. Cinematic Shutter Breach & Hero Reveal --- */
-  function triggerShutterBreach() {
-    if (isBreached) return;
-    isBreached = true;
-
-    if (canvasAnimId) cancelAnimationFrame(canvasAnimId);
-
-    loader.classList.add('dev-loader--breach');
-    document.body.classList.add('is-loaded');
-
-    // Trigger high-impact Hero Entrance
-    if (typeof gsap !== 'undefined') {
-      gsap.fromTo('.nav', { y: -40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.2, ease: 'power3.out' });
-      gsap.fromTo('.hero__badge', { scale: 0.8, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, delay: 0.35, ease: 'back.out(1.7)' });
-      gsap.fromTo('.hero__title', { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, delay: 0.45, ease: 'power3.out' });
-      gsap.fromTo('.hero__description', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.6, ease: 'power3.out' });
-      gsap.fromTo('.hero__actions', { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.7, ease: 'power3.out' });
-      gsap.fromTo('.hero__stats-row', { y: 25, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, delay: 0.8, ease: 'power3.out' });
-    }
-
-    setTimeout(() => {
-      loader.style.display = 'none';
-      loader.remove();
-    }, 950);
-  }
-})();
-
 const yearEl = document.getElementById('footer-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+console.log(
+  '%c Melwin Dave %c Hey, fellow dev 👋  Let\'s talk → abemelwin01@gmail.com',
+  'background:linear-gradient(90deg,#7c9cff,#b18cff);color:#fff;font-weight:700;padding:4px 8px;border-radius:4px',
+  'color:inherit;padding:4px'
+);
+
 /* --------------------------------------------------------------------------
-   18. Helper Utilities
+   17. Helper Utilities
    -------------------------------------------------------------------------- */
 function escapeHtml(str) {
   return String(str)
