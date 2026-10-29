@@ -434,11 +434,47 @@ kbd { font-family: var(--font-mono); }
 
 .hero { padding: 7.5rem 0 3rem; }
 
-.card--intro { grid-column: span 8; grid-row: span 2; padding: clamp(1.5rem, 3.5vw, 2.75rem); display: flex; flex-direction: column; justify-content: center; }
+.card--intro { grid-column: span 12; min-height: clamp(540px, 72vh, 680px); padding: clamp(1.5rem, 4.5vw, 3.75rem); display: flex; flex-direction: column; justify-content: center; }
+.card--intro > :not(.morph):not(.morph__hint) { position: relative; z-index: 1; max-width: 40rem; }
 .card--photo { grid-column: span 4; grid-row: span 2; padding: 0; min-height: 420px; }
-.card--stat { grid-column: span 3; display: flex; flex-direction: column; }
-.card--orbit { grid-column: span 3; }
-.card--clock { grid-column: span 3; display: flex; flex-direction: column; }
+.card--stat { grid-column: span 4; display: flex; flex-direction: column; }
+.card--orbit { grid-column: span 4; }
+.card--clock { grid-column: span 4; display: flex; flex-direction: column; }
+
+/* 3D particle morph behind the intro */
+.morph {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+.morph.is-ready { opacity: 1; }
+.card--intro.has-morph { cursor: grab; }
+.card--intro.has-morph:active { cursor: grabbing; }
+.morph__hint {
+  position: absolute;
+  right: clamp(1rem, 3vw, 1.75rem);
+  bottom: clamp(1rem, 3vw, 1.75rem);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.8rem;
+  font: 500 0.75rem var(--font-mono);
+  color: var(--fg-2);
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+.morph__hint:hover { color: var(--fg); border-color: var(--fg-3); }
+.morph__shape { color: var(--accent); }
 .card--github { grid-column: span 8; }
 .card--now { grid-column: span 4; }
 
@@ -552,6 +588,12 @@ kbd { font-family: var(--font-mono); }
 
 /* Orbit */
 .card--orbit { display: flex; flex-direction: column; min-height: 210px; }
+.card--orbit.has-3d { min-height: 340px; cursor: grab; }
+.card--orbit.has-3d:active { cursor: grabbing; }
+.card--orbit.has-3d .orbit { visibility: hidden; }
+.card--orbit .card__label { position: relative; z-index: 1; }
+.orbit3d { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; opacity: 0; transition: opacity 1s var(--ease); }
+.has-3d .orbit3d { opacity: 1; }
 
 .orbit { position: relative; flex: 1; display: grid; place-items: center; min-height: 140px; }
 
@@ -881,6 +923,38 @@ kbd { font-family: var(--font-mono); }
    11. Project controls & grid
    -------------------------------------------------------------------------- */
 .work-controls { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+
+/* View toggle: 3D carousel or grid */
+.view-toggle { display: flex; padding: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; }
+.view-toggle[hidden] { display: none; }
+.view-toggle button { padding: 0.45rem 0.95rem; font-size: 0.85rem; color: var(--fg-2); border-radius: 999px; transition: color 0.3s, background 0.3s; }
+.view-toggle button:hover { color: var(--fg); }
+.view-toggle button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.is-view-hidden { display: none !important; }
+
+/* 3D project carousel */
+.carousel { padding: 0; display: grid; }
+.carousel[hidden] { display: none; }
+.carousel__stage { position: relative; height: clamp(340px, 50vh, 500px); outline: none; }
+.carousel__stage:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); border-radius: var(--radius) var(--radius) 0 0; }
+.carousel__stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: grab; }
+.carousel__stage canvas:active { cursor: grabbing; }
+.carousel__hint {
+  position: absolute; top: 1rem; left: 1rem;
+  font: 500 0.72rem var(--font-mono); color: var(--fg-3);
+  padding: 0.3rem 0.65rem; border: 1px solid var(--border); border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  pointer-events: none;
+}
+.carousel__info { display: grid; gap: 0.6rem; padding: clamp(1.25rem, 3vw, 1.75rem); border-top: 1px solid var(--border); }
+.carousel__meta { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.carousel__count { font: 500 0.75rem var(--font-mono); color: var(--fg-3); font-variant-numeric: tabular-nums; }
+.carousel__title { font-size: clamp(1.25rem, 2.4vw, 1.6rem); font-weight: 600; letter-spacing: -0.02em; }
+.carousel__desc { color: var(--fg-2); max-width: 70ch; }
+.carousel__foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; }
+.carousel__foot .project__tags { margin: 0; }
+.carousel__nav { display: flex; align-items: center; gap: 0.5rem; }
+.carousel__nav .btn { min-height: 40px; }
 
 .segmented {
   position: relative;
@@ -1296,9 +1370,9 @@ kbd { font-family: var(--font-mono); }
    -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
   .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .card--intro { grid-column: span 4; }
+  .card--intro { grid-column: span 6; }
   .card--photo { grid-column: span 2; min-height: 380px; }
-  .card--stat, .card--orbit, .card--clock { grid-column: span 3; }
+  .card--stat, .card--orbit, .card--clock { grid-column: span 2; }
   .card--github, .card--now { grid-column: span 6; }
   .stack-card, .stack-card--wide { grid-column: span 3; }
   .card--about { grid-column: span 6; grid-row: auto; }
@@ -1316,6 +1390,8 @@ kbd { font-family: var(--font-mono); }
   .card--intro, .card--photo, .card--github, .card--now,
   .stack-card, .stack-card--wide, .card--about, .card--email, .card--form { grid-column: span 2; }
   .card--photo { min-height: 420px; }
+  .card--intro { min-height: 600px; justify-content: flex-end; }
+  .morph__how { display: none; }
   .card--stat, .card--orbit, .card--clock { grid-column: span 1; }
   .card--orbit, .card--clock { grid-column: span 2; }
   .projects, .grid-loading { grid-template-columns: 1fr; }

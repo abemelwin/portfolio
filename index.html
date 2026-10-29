@@ -43,7 +43,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..600&family=Geist:wght@300..800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="index.css?v=5" />
+  <link rel="stylesheet" href="index.css?v=6" />
 </head>
 
 <body>
@@ -103,7 +103,12 @@
         <div class="bento bento--hero spotlight-group">
 
           <!-- Intro -->
-          <article class="card card--intro reveal">
+          <article class="card card--intro reveal" id="intro">
+            <canvas class="morph" id="morph" aria-hidden="true"></canvas>
+            <button type="button" class="morph__hint" id="morph-hint" hidden>
+              <span class="morph__shape" id="morph-shape">Sphere</span>
+              <span class="morph__how">Click to morph · drag to spin</span>
+            </button>
             <div class="status-chip"><span class="dot dot--live"></span>Available for freelance &amp; full-time</div>
             <h1 class="intro__title" id="hero-title">
               <span class="intro__hi">Hi, I'm Melwin <span class="wave" aria-hidden="true">👋</span></span>
@@ -150,7 +155,8 @@
           </article>
 
           <!-- Orbit -->
-          <article class="card card--orbit reveal" aria-label="Core technologies">
+          <article class="card card--orbit reveal" id="stack-orbit" aria-label="Core technologies">
+            <canvas class="orbit3d" id="orbit3d" aria-hidden="true"></canvas>
             <span class="card__label">Core stack</span>
             <div class="orbit" aria-hidden="true">
               <div class="orbit__core">MD</div>
@@ -288,11 +294,39 @@
             <button class="filter-btn" data-filter="backend" aria-pressed="false">Backend</button>
             <button class="filter-btn" data-filter="mobile" aria-pressed="false">Apps</button>
           </div>
+          <div class="view-toggle" id="view-toggle" role="group" aria-label="Project view" hidden>
+            <button type="button" data-view="3d" aria-pressed="true">3D</button>
+            <button type="button" data-view="grid" aria-pressed="false">Grid</button>
+          </div>
           <label class="search">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input type="search" id="project-search-input" placeholder="Search vue, laravel, api…" aria-label="Search projects" autocomplete="off" />
             <kbd>/</kbd>
           </label>
+        </div>
+
+        <!-- 3D project carousel (fed by the same filters and search as the grid) -->
+        <div class="card carousel" id="carousel" hidden>
+          <div class="carousel__stage" id="carousel-stage" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Projects in 3D. Use the left and right arrow keys to browse, Enter to open.">
+            <canvas id="carousel-canvas" aria-hidden="true"></canvas>
+            <span class="carousel__hint">Drag to spin · click a card</span>
+          </div>
+          <div class="carousel__info" aria-live="polite">
+            <div class="carousel__meta">
+              <span class="badge" id="ci-badge">Loading</span>
+              <span class="carousel__count" id="ci-count"></span>
+            </div>
+            <h3 class="carousel__title" id="ci-title">Loading projects…</h3>
+            <p class="carousel__desc" id="ci-desc"></p>
+            <div class="carousel__foot">
+              <ul class="project__tags" id="ci-tags"></ul>
+              <div class="carousel__nav">
+                <button type="button" class="icon-btn" id="ci-prev" aria-label="Previous project">←</button>
+                <span id="ci-action"></span>
+                <button type="button" class="icon-btn" id="ci-next" aria-label="Next project">→</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div id="github-loading" class="grid-loading" role="status" aria-label="Loading projects…">
@@ -301,7 +335,7 @@
 
         <div id="github-projects" class="projects spotlight-group"></div>
 
-        <div class="more-row">
+        <div class="more-row" id="more-row">
           <button type="button" class="btn btn--ghost" id="show-more" hidden>Show more</button>
           <span class="more-row__count" id="project-count"></span>
         </div>
@@ -564,7 +598,7 @@
     </div>
   </div>
 
-  <script src="./index.js?v=5"></script>
+  <script src="./index.js?v=6"></script>
 
 </body>
 </html>
