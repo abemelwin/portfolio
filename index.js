@@ -289,7 +289,7 @@ const HAS_WEBGL = (() => {
    -------------------------------------------------------------------------- */
 const MORPH_SHAPES = [
   { label: 'My name', type: 'text', text: 'MELWIN' },
-  { label: "That's me", type: 'image', src: './images/abe.jpg' },
+  { label: "That's me", type: 'image', src: './images/abe.jpg', crop: { x: 0.22, y: 0.1, w: 0.56, h: 0.64 } },
   { label: 'I write code', type: 'text', text: '</>' },
   { label: 'My core stack', type: 'text', text: 'VUE\nLARAVEL' },
   { label: 'Databases & APIs', type: 'database' },
@@ -351,29 +351,57 @@ const MORPH_SHAPES = [
     }
   }
 
-  // One particle per pixel of a downscaled copy; brightness pushes it forward for a relief effect
-  function sampleImage(img, n) {
-    const aspect = img.naturalWidth / img.naturalHeight;
-    const rows = Math.max(1, Math.round(Math.sqrt(n / aspect)));
-    const cols = Math.max(1, Math.round(rows * aspect));
+  // Portrait sampling: crop to head and shoulders, stretch the levels so a dark photo still reads,
+  // then place more particles on bright areas and outlines (hair, ears, collar) than on the backdrop
+  function sampleImage(img, n, crop) {
+    const c0 = crop || { x: 0.22, y: 0.1, w: 0.56, h: 0.64 };
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const SW = 200, SH = Math.max(1, Math.round(SW * (c0.h * ih) / (c0.w * iw)));
     const c = document.createElement('canvas');
-    c.width = cols; c.height = rows;
+    c.width = SW; c.height = SH;
     const g = c.getContext('2d');
-    g.drawImage(img, 0, 0, cols, rows);
+    g.drawImage(img, c0.x * iw, c0.y * ih, c0.w * iw, c0.h * ih, 0, 0, SW, SH);
     let data;
-    try { data = g.getImageData(0, 0, cols, rows).data; } catch (e) { return null; } // tainted (e.g. opened via file://)
+    try { data = g.getImageData(0, 0, SW, SH).data; } catch (e) { return null; } // tainted (e.g. opened via file://)
+
+    const total = SW * SH;
+    const lum = new Float32Array(total);
+    const hist = new Uint32Array(256);
+    for (let i = 0; i < total; i++) {
+      const o = i * 4;
+      lum[i] = (0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2]) / 255;
+      hist[Math.min(255, Math.floor(lum[i] * 255))]++;
+    }
+    const pct = (q) => { let acc = 0; for (let b = 0; b < 256; b++) { acc += hist[b]; if (acc >= q * total) return b / 255; } return 1; };
+    const lo = pct(0.02), hi = Math.max(lo + 0.05, pct(0.995));
+    const stretch = (v) => Math.min(1, Math.max(0, (v - lo) / (hi - lo)));
+
+    const s = lum.map(stretch);
+    const edge = new Float32Array(total);
+    for (let y = 1; y < SH - 1; y++) {
+      for (let x = 1; x < SW - 1; x++) {
+        const i = y * SW + x;
+        const gx = s[i - SW + 1] + 2 * s[i + 1] + s[i + SW + 1] - s[i - SW - 1] - 2 * s[i - 1] - s[i + SW - 1];
+        const gy = s[i + SW - 1] + 2 * s[i + SW] + s[i + SW + 1] - s[i - SW - 1] - 2 * s[i - SW] - s[i - SW + 1];
+        edge[i] = Math.min(1, Math.hypot(gx, gy) * 2.5);
+      }
+    }
+
+    const cdf = new Float32Array(total);
+    let sum = 0;
+    for (let i = 0; i < total; i++) { sum += 0.05 + 0.75 * Math.pow(s[i], 1.2) + 0.9 * edge[i]; cdf[i] = sum; }
 
     const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
-    const cell = 5.2 / rows, total = cols * rows;
-    for (let i = 0; i < n; i++) {
-      const p = i < total ? i : Math.floor(Math.random() * total);
-      const x = p % cols, y = Math.floor(p / cols), o = p * 4;
-      const r = data[o] / 255, gr = data[o + 1] / 255, b = data[o + 2] / 255;
-      const lum = 0.299 * r + 0.587 * gr + 0.114 * b;
-      pos[i * 3] = (x - cols / 2 + Math.random() * 0.6) * cell;
-      pos[i * 3 + 1] = (rows / 2 - y + Math.random() * 0.6) * cell;
-      pos[i * 3 + 2] = (lum - 0.5) * 0.9;
-      col[i * 3] = r; col[i * 3 + 1] = gr; col[i * 3 + 2] = b;
+    const cell = 5.2 / SH;
+    for (let k = 0; k < n; k++) {
+      const r = Math.random() * sum;
+      let a = 0, b = total - 1;
+      while (a < b) { const m = (a + b) >> 1; if (cdf[m] < r) a = m + 1; else b = m; }
+      const x = a % SW, y = Math.floor(a / SW), o = a * 4;
+      pos[k * 3] = (x - SW / 2 + Math.random() - 0.5) * cell;
+      pos[k * 3 + 1] = (SH / 2 - y + Math.random() - 0.5) * cell;
+      pos[k * 3 + 2] = (s[a] - 0.5) * 0.9;
+      for (let ch = 0; ch < 3; ch++) col[k * 3 + ch] = Math.max(0.14, Math.pow(stretch(data[o + ch] / 255), 0.8));
     }
     return { pos, col };
   }
@@ -429,7 +457,7 @@ const MORPH_SHAPES = [
     const shapes = [], targets = [], shapeColors = [];
     MORPH_SHAPES.forEach((s, k) => {
       if (s.type === 'image') {
-        const sampled = images[k] && sampleImage(images[k], N);
+        const sampled = images[k] && sampleImage(images[k], N, s.crop);
         if (!sampled) return;
         shapes.push(s); targets.push(sampled.pos); shapeColors.push(sampled.col);
       } else {
@@ -476,7 +504,7 @@ const MORPH_SHAPES = [
     function colorsFor(k) {
       if (!shapeColors[k]) return gradCol;
       if (!colorCache[k]) {
-        const gain = document.documentElement.dataset.theme === 'light' ? 1 : 0.72;
+        const gain = document.documentElement.dataset.theme === 'light' ? 1 : 0.9;
         colorCache[k] = shapeColors[k].map(v => v * gain);
       }
       return colorCache[k];
@@ -812,6 +840,244 @@ const ORBIT_RINGS = [
       pulse = Math.max(0, pulse - dt * 1.6);
       const s = 1 + Math.sin(pulse * Math.PI) * 0.35 + Math.sin(t * 2) * 0.03;
       core.scale.set(s, s, s);
+
+      renderer.render(scene, camera);
+    }
+
+    card.classList.add('has-3d');
+    requestAnimationFrame(frame);
+  }
+})();
+
+/* --------------------------------------------------------------------------
+   7e. Based in: dotted 3D globe that settles on Batangas, PH
+   Land shapes come from land-mask.js, loaded only when the globe starts.
+   -------------------------------------------------------------------------- */
+const GLOBE_HOME = { lat: 13.76, lon: 121.06 }; // Batangas
+const GLOBE_CITIES = [
+  { lat: 1.35, lon: 103.82 },   // Singapore
+  { lat: 35.68, lon: 139.69 },  // Tokyo
+  { lat: -33.87, lon: 151.21 }, // Sydney
+  { lat: 25.2, lon: 55.27 },    // Dubai
+  { lat: 51.5, lon: -0.12 },    // London
+  { lat: 37.77, lon: -122.42 }, // San Francisco
+];
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+(function initGlobe() {
+  const card = document.getElementById('based-in');
+  const canvas = document.getElementById('globe3d');
+  if (!card || !canvas || !HAS_WEBGL) return;
+
+  Promise.all([loadThree(), window.LAND_MASK ? null : loadScript('./land-mask.js?v=1')])
+    .then(([THREE]) => { if (window.LAND_MASK) start(THREE, window.LAND_MASK); })
+    .catch(() => {});
+
+  function start(THREE, maskInfo) {
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
+    catch (e) { return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+
+    const raw = atob(maskInfo.data);
+    const mask = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) mask[i] = raw.charCodeAt(i);
+    const { res, width: MW, height: MH } = maskInfo;
+    const isLand = (lat, lon) => {
+      const r = Math.min(MH - 1, Math.max(0, Math.floor((90 - lat) / res)));
+      const c = ((Math.floor((lon + 180) / res) % MW) + MW) % MW;
+      const k = r * MW + c;
+      return (mask[k >> 3] >> (k & 7)) & 1;
+    };
+    const inPH = (lat, lon) => lat > 4.5 && lat < 21.5 && lon > 116 && lon < 127;
+
+    const R = 2;
+    const toVec = (lat, lon, r) => {
+      const phi = ((90 - lat) * Math.PI) / 180, th = ((lon + 180) * Math.PI) / 180;
+      return new THREE.Vector3(-Math.sin(phi) * Math.cos(th) * r, Math.cos(phi) * r, Math.sin(phi) * Math.sin(th) * r);
+    };
+
+    // Land dots on a Fibonacci sphere; the Philippines gets its own denser grid
+    const land = [], ph = [];
+    const N = window.innerWidth < 760 ? 14000 : 22000, GA = Math.PI * (3 - Math.sqrt(5));
+    for (let n = 0; n < N; n++) {
+      const y = 1 - (n / (N - 1)) * 2;
+      const lat = (Math.asin(y) * 180) / Math.PI, lon = (((n * GA * 180) / Math.PI) % 360) - 180;
+      if (isLand(lat, lon) && !inPH(lat, lon)) land.push(lat, lon);
+    }
+    for (let la = 4.6; la < 21.4; la += 0.32) {
+      for (let lo = 116.1; lo < 126.9; lo += 0.32) {
+        if (isLand(la, lo)) ph.push(la + (Math.random() - 0.5) * 0.22, lo + (Math.random() - 0.5) * 0.22);
+      }
+    }
+    const pointsGeo = (list, r) => {
+      const arr = new Float32Array((list.length / 2) * 3);
+      for (let i = 0; i < list.length; i += 2) {
+        const v = toVec(list[i], list[i + 1], r);
+        arr.set([v.x, v.y, v.z], (i / 2) * 3);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+      return g;
+    };
+
+    const dotCanvas = document.createElement('canvas');
+    dotCanvas.width = dotCanvas.height = 32;
+    const dc = dotCanvas.getContext('2d');
+    dc.beginPath(); dc.arc(16, 16, 14, 0, Math.PI * 2); dc.fillStyle = '#fff'; dc.fill();
+    const dot = new THREE.CanvasTexture(dotCanvas);
+
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 128;
+    const gc = glowCanvas.getContext('2d');
+    const gg = gc.createRadialGradient(64, 64, 30, 64, 64, 64);
+    gg.addColorStop(0, 'rgba(255,255,255,0.5)');
+    gg.addColorStop(1, 'rgba(255,255,255,0)');
+    gc.fillStyle = gg; gc.fillRect(0, 0, 128, 128);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+    const globe = new THREE.Group();
+    scene.add(globe);
+
+    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), depthWrite: false, transparent: true }));
+    halo.scale.set(R * 2.9, R * 2.9, 1);
+    scene.add(halo);
+    const occluder = new THREE.Mesh(new THREE.SphereGeometry(R * 0.985, 48, 48), new THREE.MeshBasicMaterial());
+    globe.add(occluder);
+
+    const landMat = new THREE.PointsMaterial({ size: 0.05, map: dot, transparent: true, alphaTest: 0.4 });
+    globe.add(new THREE.Points(pointsGeo(land, R), landMat));
+    const phMat = new THREE.PointsMaterial({ size: 0.062, map: dot, transparent: true, alphaTest: 0.4 });
+    globe.add(new THREE.Points(pointsGeo(ph, R * 1.002), phMat));
+
+    // Home pin with pulsing rings lying flat on the surface
+    const home = toVec(GLOBE_HOME.lat, GLOBE_HOME.lon, R * 1.01);
+    const pinMat = new THREE.MeshBasicMaterial();
+    const pin = new THREE.Mesh(new THREE.SphereGeometry(0.045, 16, 16), pinMat);
+    pin.position.copy(home);
+    globe.add(pin);
+    const rings = [0, 0.5].map((offset) => {
+      const m = new THREE.Mesh(new THREE.RingGeometry(0.06, 0.075, 40), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide, depthWrite: false }));
+      m.position.copy(home);
+      m.lookAt(home.clone().multiplyScalar(2));
+      m.userData.offset = offset;
+      globe.add(m);
+      return m;
+    });
+
+    // Arcs to cities, drawn as travelling segments
+    const arcMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.85 });
+    const endMat = new THREE.MeshBasicMaterial();
+    const arcs = GLOBE_CITIES.map((c, k) => {
+      const a = toVec(GLOBE_HOME.lat, GLOBE_HOME.lon, R), b = toVec(c.lat, c.lon, R);
+      const mid = a.clone().add(b).normalize().multiplyScalar(R + a.distanceTo(b) * 0.38);
+      const pts = new THREE.QuadraticBezierCurve3(a, mid, b).getPoints(80);
+      const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), arcMat);
+      const end = new THREE.Mesh(new THREE.SphereGeometry(0.025, 10, 10), endMat);
+      end.position.copy(toVec(c.lat, c.lon, R * 1.005));
+      line.userData = { offset: k / GLOBE_CITIES.length, count: pts.length, end };
+      globe.add(line, end);
+      return line;
+    });
+
+    function applyTheme() {
+      const cs = getComputedStyle(document.documentElement);
+      const v = (name) => cs.getPropertyValue(name).trim();
+      const light = document.documentElement.dataset.theme === 'light';
+      occluder.material.color.set(v('--card'));
+      landMat.color.set(light ? '#8a8a96' : '#8d91a6');
+      phMat.color.set(v('--accent'));
+      pinMat.color.set(v('--accent'));
+      rings.forEach(r => r.material.color.set(v('--accent')));
+      arcMat.color.set(v('--accent-2'));
+      endMat.color.set(v('--accent-2'));
+      halo.material.color.set(v('--accent'));
+      halo.material.opacity = light ? 0.35 : 0.5;
+    }
+    applyTheme();
+    new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // Rotation that faces Batangas toward the camera
+    const hv = toVec(GLOBE_HOME.lat, GLOBE_HOME.lon, 1);
+    const homeY = Math.atan2(-hv.x, hv.z), homeX = ((GLOBE_HOME.lat * Math.PI) / 180) * 0.85;
+    let rotY = REDUCED_MOTION ? homeY : homeY - 1.4, vel = 0, idle = 99;
+
+    // Fit the globe between the label and the clock, nudged right on wide cards
+    function resize() {
+      const w = Math.max(1, card.clientWidth), h = Math.max(1, card.clientHeight);
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      let dist = (R * 2.35) / 0.62 / 2 / Math.tan((camera.fov * Math.PI) / 360);
+      if (camera.aspect < 1) dist /= camera.aspect;
+      camera.position.set(0, 0, dist);
+      const vh = 2 * Math.tan((camera.fov * Math.PI) / 360) * dist;
+      globe.position.set(camera.aspect > 1.4 ? vh * camera.aspect * 0.18 : 0, vh * 0.04, 0);
+      halo.position.copy(globe.position).add(new THREE.Vector3(0, 0, -R));
+      camera.updateProjectionMatrix();
+    }
+    resize();
+    new ResizeObserver(resize).observe(card);
+
+    let down = false, lastX = 0;
+    card.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      down = true; lastX = e.clientX; idle = 0;
+    });
+    card.addEventListener('pointermove', (e) => {
+      if (!down) return;
+      vel = (e.clientX - lastX) * 0.006;
+      rotY += vel;
+      lastX = e.clientX;
+    }, { passive: true });
+    window.addEventListener('pointerup', () => { down = false; });
+    window.addEventListener('pointercancel', () => { down = false; });
+
+    let visible = true;
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(card);
+
+    let t = 0, last = performance.now();
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      if (!visible || document.hidden) return;
+      if (!REDUCED_MOTION) t += dt;
+
+      if (!down) {
+        idle += dt;
+        if (Math.abs(vel) > 0.0005) { rotY += vel; vel *= 0.93; }
+        else if (idle > 1.5) {
+          // Ease home the short way round, then sway gently
+          const target = homeY + (REDUCED_MOTION ? 0 : Math.sin(t * 0.35) * 0.22);
+          rotY += Math.atan2(Math.sin(target - rotY), Math.cos(target - rotY)) * Math.min(1, dt * 2);
+        }
+      }
+      globe.rotation.set(homeX, rotY, 0);
+
+      rings.forEach((r) => {
+        const p = (t * 0.7 + r.userData.offset) % 1;
+        r.scale.setScalar(1 + p * 3.2);
+        r.material.opacity = (1 - p) * 0.9;
+      });
+      arcs.forEach((l) => {
+        const { offset, count, end } = l.userData;
+        if (REDUCED_MOTION) { l.geometry.setDrawRange(0, count); return; }
+        const p = (t * 0.28 + offset) % 1;
+        const head = Math.floor(Math.min(1, p * 1.6) * count), tail = Math.floor(Math.max(0, p * 1.6 - 0.45) * count);
+        l.geometry.setDrawRange(tail, Math.max(0, head - tail));
+        end.scale.setScalar(p > 0.6 && p < 0.9 ? 1.6 : 1);
+      });
 
       renderer.render(scene, camera);
     }
