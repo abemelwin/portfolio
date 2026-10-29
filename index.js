@@ -933,7 +933,9 @@ const ORBIT_RINGS = [
       const w = Math.max(1, card.clientWidth), h = Math.max(1, card.clientHeight);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      camera.position.z = camera.aspect < 1.2 ? 8.8 / Math.max(0.6, camera.aspect / 1.2) : 8.8;
+      // Keep the outer ring and its labels inside the card at any width
+      const halfFov = Math.tan((camera.fov * Math.PI) / 360);
+      camera.position.z = Math.max(8.8, 5.4 / (halfFov * camera.aspect));
       camera.updateProjectionMatrix();
       needsFrame = true;
     }
@@ -1960,7 +1962,7 @@ const PAGE_SIZE = 9;
       const w = Math.max(1, stage.clientWidth), h = Math.max(1, stage.clientHeight);
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      const dist = R + (camera.aspect < 1 ? 7.6 : 5.4);
+      const dist = R + (camera.aspect < 1 ? 6 : 5.4);
       camY = 0.6 + Math.max(0, R - 4.6) * 0.2;
       camera.position.set(0, camY, dist);
       // Aim between the back of the ring and the bottom of the front card so both fit

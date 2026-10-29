@@ -1451,6 +1451,11 @@ html.intro-on .intro {
   .dash { transform: none; }
 }
 
+/* Particles sit above the copy once the hero card is taller than wide */
+@media (max-width: 900px) {
+  .card--intro { min-height: 640px; justify-content: flex-end; }
+}
+
 @media (max-width: 760px) {
   .nav__links, .nav__name { display: none; }
   .nav__menu { display: grid; }
@@ -1461,11 +1466,14 @@ html.intro-on .intro {
   .card--photo { min-height: 420px; }
   .card--intro { min-height: 600px; justify-content: flex-end; }
   .morph__how { display: none; }
+  .morph__hint { top: 1rem; bottom: auto; }
   .card--stat, .card--orbit, .card--clock { grid-column: span 1; }
   .card--orbit, .card--clock { grid-column: span 2; }
   .projects, .grid-loading { grid-template-columns: 1fr; }
   .grid-loading span:nth-child(n+2) { display: none; }
-  .segmented { width: 100%; justify-content: space-between; }
+  .segmented { width: 100%; justify-content: space-between; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .segmented::-webkit-scrollbar { display: none; }
+  .filter-btn { flex-shrink: 0; }
   .search { width: 100%; }
   .search kbd { display: none; }
   .footer__mid { display: none; }
