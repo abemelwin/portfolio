@@ -356,7 +356,7 @@ const MORPH_SHAPES = [
   function sampleImage(img, n, crop) {
     const c0 = crop || { x: 0.22, y: 0.1, w: 0.56, h: 0.64 };
     const iw = img.naturalWidth, ih = img.naturalHeight;
-    const SW = 200, SH = Math.max(1, Math.round(SW * (c0.h * ih) / (c0.w * iw)));
+    const SW = 240, SH = Math.max(1, Math.round(SW * (c0.h * ih) / (c0.w * iw)));
     const c = document.createElement('canvas');
     c.width = SW; c.height = SH;
     const g = c.getContext('2d');
@@ -389,10 +389,10 @@ const MORPH_SHAPES = [
 
     const cdf = new Float32Array(total);
     let sum = 0;
-    for (let i = 0; i < total; i++) { sum += 0.05 + 0.75 * Math.pow(s[i], 1.2) + 0.9 * edge[i]; cdf[i] = sum; }
+    for (let i = 0; i < total; i++) { sum += 0.04 + Math.pow(s[i], 1.1) + 0.4 * edge[i]; cdf[i] = sum; }
 
     const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
-    const cell = 5.2 / SH;
+    const cell = 6.2 / SH;
     for (let k = 0; k < n; k++) {
       const r = Math.random() * sum;
       let a = 0, b = total - 1;
@@ -447,7 +447,7 @@ const MORPH_SHAPES = [
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
 
     const TAU = Math.PI * 2;
-    const N = window.innerWidth < 760 ? 4500 : 9000;
+    const N = window.innerWidth < 760 ? 7000 : 16000;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.z = 10;
@@ -492,7 +492,7 @@ const MORPH_SHAPES = [
     dg.fillRect(0, 0, 64, 64);
 
     const mat = new THREE.PointsMaterial({
-      size: 0.05, map: new THREE.CanvasTexture(dot), vertexColors: true, transparent: true, depthWrite: false,
+      size: 0.04, map: new THREE.CanvasTexture(dot), vertexColors: true, transparent: true, depthWrite: false,
     });
     const points = new THREE.Points(geo, mat);
     scene.add(points);
