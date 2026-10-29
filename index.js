@@ -218,7 +218,11 @@ function countUp(el, target, duration = 1400) {
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
 
-  els.forEach(el => observer.observe(el));
+  // Wait for the intro to lift so the hero cards animate in view
+  const observeAll = () => els.forEach(el => observer.observe(el));
+  const root = document.documentElement;
+  if (root.classList.contains('intro-on') && root.dataset.intro !== 'done') document.addEventListener('intro:done', observeAll, { once: true });
+  else observeAll();
 })();
 
 /* --------------------------------------------------------------------------
@@ -252,6 +256,144 @@ function countUp(el, target, duration = 1400) {
       card.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${y * -8}deg)`;
     });
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+})();
+
+/* --------------------------------------------------------------------------
+   2b. Intro — particles gather into MELWIN, then the screen lifts away.
+   Plays once per browser session; the head script decides via .intro-on.
+   -------------------------------------------------------------------------- */
+(function initIntro() {
+  const root = document.documentElement;
+  const screen = document.getElementById('intro-screen');
+  if (!screen) return;
+  if (!root.classList.contains('intro-on')) { screen.remove(); return; }
+  try { sessionStorage.setItem('mda-intro', '1'); } catch (e) {}
+
+  const canvas = document.getElementById('intro-canvas');
+  const ctx = canvas.getContext('2d');
+  const pctEl = document.getElementById('intro-pct');
+  const barEl = document.getElementById('intro-bar');
+  const skipBtn = document.getElementById('intro-skip');
+
+  const ASSEMBLE = 1.1;  // seconds each particle takes to land
+  const HOLD_UNTIL = 2.3; // seconds before the screen lifts
+  let W = 0, H = 0, dpr = 1, particles = [], step = 4;
+  let start = 0, leaving = false, leaveAt = 0, raf = 0;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function build() {
+    const light = root.dataset.theme === 'light';
+    const stops = light ? ['#4f6bff', '#8a5cff', '#e0559b'] : ['#7c9cff', '#b18cff', '#ff8fc7'];
+    const size = Math.min(W * 0.17, 230);
+    step = Math.max(3, Math.round(size / 40));
+
+    const off = document.createElement('canvas');
+    off.width = W; off.height = H;
+    const g = off.getContext('2d');
+    g.fillStyle = '#fff';
+    g.font = `800 ${size}px Geist, system-ui, sans-serif`;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText('MELWIN', W / 2, H * 0.47);
+    const data = g.getImageData(0, 0, W, H).data;
+
+    const swatch = document.createElement('canvas');
+    swatch.width = 256; swatch.height = 1;
+    const sg = swatch.getContext('2d');
+    const sgrad = sg.createLinearGradient(0, 0, 256, 0);
+    stops.forEach((c, i) => sgrad.addColorStop(i / (stops.length - 1), c));
+    sg.fillStyle = sgrad; sg.fillRect(0, 0, 256, 1);
+    const sw = sg.getImageData(0, 0, 256, 1).data;
+
+    const reach = Math.max(W, H) * 0.75;
+    particles = [];
+    for (let y = 0; y < H; y += step) {
+      for (let x = 0; x < W; x += step) {
+        if (data[(y * W + x) * 4 + 3] < 128) continue;
+        const a = Math.random() * Math.PI * 2, r = reach * (0.6 + Math.random() * 0.6);
+        const u = Math.min(255, Math.max(0, Math.round(((x - W * 0.2) / (W * 0.6)) * 255)));
+        particles.push({
+          tx: x, ty: y,
+          sx: W / 2 + Math.cos(a) * r, sy: H / 2 + Math.sin(a) * r,
+          d: Math.random() * 0.45 + (x / W) * 0.3,
+          ph: Math.random() * Math.PI * 2,
+          c: `rgb(${sw[u * 4]},${sw[u * 4 + 1]},${sw[u * 4 + 2]})`,
+          vy: 0.6 + Math.random() * 0.8,
+        });
+      }
+    }
+    // Group by colour so the draw loop changes fillStyle rarely
+    particles.sort((p, q) => (p.c < q.c ? -1 : 1));
+  }
+
+  const easeOut = (k) => 1 - Math.pow(1 - k, 4);
+
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    const t = (now - start) / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    const progress = Math.min(1, t / (HOLD_UNTIL - 0.3));
+    const pct = Math.round(easeOut(progress) * 100);
+    pctEl.textContent = String(pct);
+    barEl.style.transform = `scaleX(${pct / 100})`;
+
+    const lift = leaving ? (now - leaveAt) / 1000 : 0;
+    const dot = Math.max(1.5, step * 0.62);
+    let fill = '';
+    for (const p of particles) {
+      const k = Math.min(1, Math.max(0, (t - p.d) / ASSEMBLE));
+      const e = easeOut(k);
+      let x = p.sx + (p.tx - p.sx) * e;
+      let y = p.sy + (p.ty - p.sy) * e + (k >= 1 ? Math.sin(t * 2.2 + p.ph) * 0.8 : 0);
+      if (lift) y -= lift * lift * H * 1.4 * p.vy;
+      if (p.c !== fill) { fill = p.c; ctx.fillStyle = fill; }
+      ctx.fillRect(x, y, dot, dot);
+    }
+
+    if (!leaving && t >= HOLD_UNTIL) finish();
+  }
+
+  function finish() {
+    if (leaving) return;
+    leaving = true;
+    leaveAt = performance.now();
+    root.dataset.intro = 'done';
+    document.dispatchEvent(new Event('intro:done'));
+    screen.classList.add('is-leaving');
+    let cleaned = false;
+    const cleanup = () => {
+      if (cleaned) return;
+      cleaned = true;
+      cancelAnimationFrame(raf);
+      root.classList.remove('intro-on');
+      screen.remove();
+    };
+    screen.addEventListener('transitionend', (e) => { if (e.target === screen) cleanup(); });
+    setTimeout(cleanup, 1400);
+  }
+
+  screen.addEventListener('click', finish);
+  skipBtn.addEventListener('click', (e) => { e.stopPropagation(); finish(); });
+  window.addEventListener('keydown', function onKey(e) {
+    if (!['Escape', 'Enter', ' '].includes(e.key)) return;
+    window.removeEventListener('keydown', onKey);
+    finish();
+  });
+
+  resize();
+  const fontReady = document.fonts ? Promise.race([document.fonts.load('800 200px Geist'), new Promise(r => setTimeout(r, 700))]) : Promise.resolve();
+  fontReady.catch(() => {}).then(() => {
+    build();
+    start = performance.now();
+    raf = requestAnimationFrame(frame);
   });
 })();
 
@@ -553,6 +695,21 @@ const MORPH_SHAPES = [
     resize();
     new ResizeObserver(resize).observe(card);
 
+    // Opening: particles fly in from a scattered cloud, held back while the intro is showing
+    const root = document.documentElement;
+    let hold = root.classList.contains('intro-on') && root.dataset.intro !== 'done';
+    if (hold) document.addEventListener('intro:done', () => { hold = false; }, { once: true });
+    if (!REDUCED_MOTION) {
+      for (let i = 0; i < N; i++) {
+        const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, r = 9 + Math.random() * 6, s = Math.sqrt(1 - u * u);
+        from[i * 3] = Math.cos(th) * s * r; from[i * 3 + 1] = u * r; from[i * 3 + 2] = Math.sin(th) * s * r;
+      }
+      pos.set(from);
+      fromCol.set(col);
+      geo.attributes.position.needsUpdate = true;
+      p = 0;
+    }
+
     let timer = 0;
     function next() {
       from.set(pos);
@@ -613,10 +770,10 @@ const MORPH_SHAPES = [
       }
 
       t += dt;
-      if (!pointer.down) timer += dt;
+      if (!pointer.down && !hold && p >= 1) timer += dt;
       if (timer > (shapes[cur].type === 'image' ? 8 : 6)) next();
 
-      if (p < 1) {
+      if (p < 1 && !hold) {
         p = Math.min(1, p + dt / 1.7);
         const e = ease(p), swirl = Math.sin(p * Math.PI) * 0.18;
         for (let k = 0; k < N * 3; k += 3) {

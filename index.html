@@ -37,16 +37,29 @@
       var savedTheme = localStorage.getItem('mda-theme');
       if (savedTheme === 'light' || savedTheme === 'dark') document.documentElement.dataset.theme = savedTheme;
     } catch (e) {}
+    // Intro plays once per session and never for reduced motion
+    try {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('mda-intro')) document.documentElement.classList.add('intro-on');
+    } catch (e) {}
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400..600&family=Geist:wght@300..800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="index.css?v=8" />
+  <link rel="stylesheet" href="index.css?v=9" />
 </head>
 
 <body>
+
+  <!-- ***** Intro ***** -->
+  <div class="intro" id="intro-screen">
+    <canvas class="intro__canvas" id="intro-canvas" aria-hidden="true"></canvas>
+    <div class="intro__line intro__line--top"><span>Melwin Dave D. Abe</span><span>Portfolio · 2026</span></div>
+    <div class="intro__line intro__line--bottom"><span>Full-Stack Developer · Batangas, PH</span><span class="intro__pct"><b id="intro-pct">0</b>%</span></div>
+    <div class="intro__bar" aria-hidden="true"><i id="intro-bar"></i></div>
+    <button type="button" class="intro__skip" id="intro-skip">Skip intro</button>
+  </div>
 
   <div class="bg" aria-hidden="true">
     <div class="bg__glow bg__glow--1"></div>
@@ -599,7 +612,7 @@
     </div>
   </div>
 
-  <script src="./index.js?v=8"></script>
+  <script src="./index.js?v=9"></script>
 
 </body>
 </html>
